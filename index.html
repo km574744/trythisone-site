@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Try This One — for creative minds &amp; thought</title>
+<meta name="description" content="A creative extension for anyone doing thoughtful work. Dump what's in your head onto an infinite canvas, keep tasks across three time horizons, and walk through what's in the way, one step at a time.">
+<meta name="theme-color" content="#0e0e10">
+
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Try This One">
+<meta property="og:description" content="for creative minds &amp; thought">
+<meta property="og:image" content="assets/icon.png">
+<meta name="twitter:card" content="summary">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Mali:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tto.css">
+</head>
+
+<body>
+
+<!-- The dot grid and the two corner glows the whole app stands on. -->
+<div class="ground" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="wordmark" href="./">
+      <img src="assets/icon.png" alt="" width="26" height="26">
+      try this one
+    </a>
+    <a class="topbar__link" href="support.html">Support</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- =====================================================================
+       Hero
+       ===================================================================== -->
+  <div class="page">
+    <section class="hero">
+      <img class="hero__icon" src="assets/icon.png" alt="The Try This One app icon" width="104" height="104">
+
+      <h1>Try This One</h1>
+      <p class="tagline">for creative minds &amp; thought</p>
+
+      <p class="lead">
+        A creative extension for anyone doing thoughtful work. Get what's in
+        your head out of it, put it somewhere you can see all of at once, and
+        come back to it when you're ready.
+      </p>
+
+      <!-- PLACEHOLDER BADGE.
+           The app isn't on the App Store yet, so this is a stand-in drawn in
+           the app's own style and pointing nowhere. Apple's badge has to be
+           Apple's own artwork — when the app is approved, download it from
+           developer.apple.com/app-store/marketing/guidelines/ and replace this
+           whole <a> with it, pointing at the real App Store link. -->
+      <a class="badge glass" href="#" aria-label="Coming soon to the App Store">
+        <svg class="badge__glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M12 3a1 1 0 0 1 1 1v9.59l3.3-3.3a1 1 0 1 1 1.4 1.42l-5 5a1 1 0 0 1-1.4 0l-5-5a1 1 0 1 1 1.4-1.42l3.3 3.3V4a1 1 0 0 1 1-1Zm-7 14a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v1.5A1.5 1.5 0 0 1 18.5 21h-13A1.5 1.5 0 0 1 4 19.5V18a1 1 0 0 1 1-1Z"/>
+        </svg>
+        <span class="badge__text">
+          <span class="badge__sup">Coming soon to</span>
+          <span class="badge__main">the App Store</span>
+        </span>
+      </a>
+
+      <p class="badge-note">iPhone · iOS 17 and later</p>
+
+      <figure class="shot glass shot--hero"
+              data-placeholder="images/hero.png">
+        <img src="images/hero.png" alt="Try This One running on an iPhone" loading="eager">
+      </figure>
+    </section>
+  </div>
+
+  <!-- =====================================================================
+       How it works — the three tabs
+       ===================================================================== -->
+  <div class="page">
+    <section id="how">
+      <div class="section-head">
+        <h2>Three tabs, and that's the whole app</h2>
+        <p>
+          One for getting it out, one for what you've decided to do, and one for
+          the days when neither of those is happening.
+        </p>
+      </div>
+
+      <div class="tabs">
+
+        <!-- Brain Dump -->
+        <article class="tab tab--braindump glass sky sky--braindump">
+          <figure class="shot" data-placeholder="images/brain-dump.png">
+            <img src="images/brain-dump.png" alt="The Brain Dump canvas, memos scattered across a wall" loading="lazy">
+          </figure>
+          <div class="tab__body">
+            <p class="tab__name">brain dump</p>
+            <h3>An infinite wall you can push things around on</h3>
+            <p>
+              Write a note and it lands on the wall. Drag it, pinch the whole
+              board, draw on a memo, record one out loud. Nothing is filed and
+              nothing is sorted until you want it to be.
+            </p>
+            <p>
+              The notes have weight — drop one on top of another and it makes
+              room for itself. Pile them up, spread them out, leave them where
+              they fell.
+            </p>
+          </div>
+        </article>
+
+        <!-- Tasks -->
+        <article class="tab tab--tasks glass">
+          <figure class="shot" data-placeholder="images/tasks.png">
+            <img src="images/tasks.png" alt="The Tasks screen, three shelves of tasks" loading="lazy">
+          </figure>
+          <div class="tab__body">
+            <p class="tab__name">tasks</p>
+            <h3>Three shelves, not one list</h3>
+            <p>
+              Everything you've decided to do sits on one of three shelves,
+              sorted by how far away it is rather than by how important someone
+              says it is.
+            </p>
+            <ul class="chips">
+              <li>now</li>
+              <li>later</li>
+              <li>eventually</li>
+            </ul>
+            <p>
+              A task can carry a time, and the shelf shades with the clock — the
+              morning end pale, the evening end deep — so a glance tells you
+              where in the day you are.
+            </p>
+          </div>
+        </article>
+
+        <!-- Reflect -->
+        <article class="tab tab--reflect glass sky sky--reflect">
+          <figure class="shot" data-placeholder="images/reflect.png">
+            <img src="images/reflect.png" alt="A guided walkthrough in the Reflect tab" loading="lazy">
+          </figure>
+          <div class="tab__body">
+            <p class="tab__name">reflect</p>
+            <h3>Walkthroughs, one step at a time</h3>
+            <p>
+              Each one is a method that would work on a sheet of paper with a
+              pen and nothing else. The app only holds the steps and keeps the
+              pace.
+            </p>
+            <p>
+              A mind dump for when there's too much at once. A walkthrough for
+              when you know the task and you're doing everything except it. What
+              you write ends up back on the wall, and the ones worth doing
+              become tasks.
+            </p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+  </div>
+
+  <!-- =====================================================================
+       Closing
+       ===================================================================== -->
+  <div class="page narrow">
+    <section>
+      <div class="closing glass">
+        <h2>No streaks. No counts. No notifications asking where you've been.</h2>
+        <p>
+          The app doesn't keep score, and it won't tell you that you've missed a
+          day. It's there when you open it.
+        </p>
+        <p class="hand">Try this one.</p>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<footer>
+  <ul class="footer__links">
+    <li><a href="support.html">Support</a></li>
+    <li><a href="https://km574744.github.io/tto-site/privacy.html">Privacy Policy</a></li>
+    <li><a href="https://km574744.github.io/tto-site/terms.html">Terms</a></li>
+    <li><a href="https://km574744.github.io/tto-site/ai.html">AI Use</a></li>
+    <li><a href="mailto:kmworkshq@gmail.com">Contact</a></li>
+  </ul>
+  <p class="footer__fine">© 2026 Try This One</p>
+</footer>
+
+<!-- The only script on the page.
+
+     Every screenshot frame points at a file in images/ that hasn't been taken
+     yet. Drop a PNG in at that filename and it shows up with no markup to edit;
+     until then this removes the <img> that failed, leaving the frame and its
+     label, because a broken-image icon on a landing page looks like a mistake
+     and an empty frame looks like a decision. Delete this once the real
+     screenshots are in. -->
+<script>
+  for (const img of document.querySelectorAll('.shot img')) {
+    img.addEventListener('error', () => img.remove());
+    // A cached failure can land before the listener does.
+    if (img.complete && img.naturalWidth === 0) img.remove();
+  }
+</script>
+
+</body>
+</html>

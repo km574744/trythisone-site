@@ -1,0 +1,783 @@
+/* ---------------------------------------------------------------------------
+   try this one — site stylesheet
+
+   Every value below is lifted from the app, not chosen here. Where a token came
+   from is named in a comment, so when the app moves, this file has an address
+   to follow:
+
+     DesignSystem/Colors.swift      palette, per-tab backgrounds, tab identity
+     DesignSystem/TTOTheme.swift    the shipped accent trio
+     DesignSystem/Typography.swift  the two faces and the seven-step size scale
+     Shared/TTOGlass.swift          the frosted-glass recipe and the radius scale
+     Shared/TTOBackground.swift     the dot grid and the corner glows
+   --------------------------------------------------------------------------- */
+
+:root {
+  /* -- Accents. The shipped trio from TTOTheme.shipped. The app lets these be
+        retinted; a web page has one palette, so it wears the defaults. ------ */
+  --cyan:   #00bfff;
+  --green:  #90EE90;
+  --indigo: #8b85ec;
+
+  /* Chrome, fixed in the app and fixed here (Colors.swift). */
+  --silver: #c7ccd4;
+  --white:  #f5f7fa;
+
+  /* -- Tab identity. Each tab owns a deep tone and a lit one. ---------------- */
+  --tab-blue:      #15448f;
+  --tab-blue-hi:   #2f6fe0;
+  --tab-indigo:    #2f2c9e;
+  --tab-indigo-hi: #5a54e0;
+  --tab-maroon:    #77202a;
+  --tab-maroon-hi: #a63e44;
+  --maroon-soft:   #c9646b;
+
+  /* -- Ground. Three near-blacks, one per tab. The page stands on the Tasks
+        one and borrows the other two for the sections that belong to them. -- */
+  --bg:           #0e0e10;
+  --bg-braindump: #0c0c0e;
+  --bg-reflect:   #0d0c0d;
+
+  /* -- Ink. ----------------------------------------------------------------- */
+  --ink:       var(--white);
+  --ink-quiet: var(--silver);
+  --ink-faint: rgba(199, 204, 212, .58);
+
+  /* -- Glass, from TTOGlass.swift. ------------------------------------------
+        The modifier stacks a blur, a white tint lit from the top, a hairline
+        border that is brightest on its top edge, and one drop shadow. These are
+        that stack, component by component, so a surface here is assembled the
+        same way a surface in the app is. */
+  --glass-blur:   9px;                       /* the prototype's backdrop-filter */
+  --glass-top:    rgba(255, 255, 255, .075); /* tint gradient, 0%   */
+  --glass-mid:    rgba(255, 255, 255, .020); /* tint gradient, 55%  */
+  --glass-bot:    rgba(255, 255, 255, .012); /* tint gradient, 100% */
+  --edge-lit:     rgba(255, 255, 255, .14);  /* strokeOpacity          */
+  --edge-hair:    rgba(255, 255, 255, .039); /* strokeOpacity × 0.28   */
+  --glass-shadow: 0 8px 18px rgba(0, 0, 0, .5);
+
+  /* -- Radii, from TTORadius. Five steps, far enough apart to be deliberate.
+        The rule is the role, not the size. ---------------------------------- */
+  --r-chip:  6px;
+  --r-card:  12px;
+  --r-panel: 16px;
+  --r-sheet: 20px;
+  --r-stage: 26px;
+
+  /* -- Type, from TTOSize. ---------------------------------------------------
+        The app's scale is in points, for text held a foot from your face inside
+        a 393pt-wide phone. A page read at arm's length needs more, so each step
+        is carried up by about two points. What is kept is the shape of the
+        scale: the five small steps a point apart, and the deliberate gulf
+        before the two large ones — a heading is a different kind of text, not a
+        slightly bigger label. */
+  --t-micro:   11px;  /* 10 — timestamps, the smallest print   */
+  --t-tiny:    12px;  /* 11 — captions, a line under something */
+  --t-small:   13px;  /* 12 — chips, quiet remarks             */
+  --t-base:    15px;  /* 13 — ordinary interface text          */
+  --t-strong:  17px;  /* 14 — read this one first              */
+  --t-title:   24px;  /* 20 — a section's heading              */
+  --t-display: 34px;  /* 23 — the one biggest thing            */
+
+  /* -- Rhythm. The app's own spacing is per-surface rather than a named scale,
+        so this is a plain 4pt ladder — the grid everything in the app already
+        lands on. ------------------------------------------------------------ */
+  --s1: 4px;  --s2: 8px;  --s3: 12px; --s4: 16px;
+  --s5: 24px; --s6: 32px; --s7: 48px; --s8: 72px;
+
+  --page: 980px;   /* the widest the content ever gets */
+  --gutter: 20px;  /* the side margin on a phone       */
+}
+
+/* ===========================================================================
+   Ground
+   =========================================================================== */
+
+* { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: Quicksand, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-weight: 500;
+  font-size: var(--t-base);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* The living background, from TTOBackground.swift: a dot grid and two soft
+   corner glows. Fixed rather than scrolling, because in the app this sits
+   behind the whole tab stack and the content moves over it.
+
+   The app's grid drifts at 0.55 of the board's pan, which is what reads as
+   depth instead of one flat sheet. Nothing here pans, so the grid is still. */
+.ground {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* radial-gradient(circle, rgba(255,255,255,.05) 1px, transparent 1.4px)
+   at 24×24, offset 12,6 — the Brain Dump floor, exactly. */
+.ground::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, .05) 1px, transparent 1.4px);
+  background-size: 24px 24px;
+  background-position: 12px 6px;
+}
+
+/* The two glows. Sized off the prototype's 393pt design width, so they hold
+   their proportions on a monitor the way they do on a phone. */
+.ground::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 42% at 12% -6%,  rgba(0, 191, 255, .09), transparent 62%),
+    radial-gradient(68% 50% at 90% 112%, rgba(21, 68, 143, .18), transparent 60%);
+}
+
+/* A section can borrow another tab's sky. Same two-glow shape, that tab's
+   colours — Brain Dump's indigo, Reflect's maroon. */
+.sky { position: relative; isolation: isolate; }
+.sky::before {
+  content: "";
+  position: absolute;
+  inset: -10% -20%;
+  z-index: -1;
+  pointer-events: none;
+}
+.sky--braindump::before {
+  background:
+    radial-gradient(54% 38% at 10% -4%,  rgba(90, 84, 224, .10), transparent 60%),
+    radial-gradient(66% 48% at 92% 108%, rgba(47, 44, 158, .20), transparent 60%);
+}
+.sky--reflect::before {
+  background:
+    radial-gradient(56% 40% at 12% -5%,  rgba(166, 62, 68, .10), transparent 60%),
+    radial-gradient(66% 48% at 90% 108%, rgba(119, 32, 42, .22), transparent 60%);
+}
+
+/* ===========================================================================
+   Frosted glass — the one surface the whole app is built from
+   =========================================================================== */
+
+.glass {
+  position: relative;
+  background-color: rgba(255, 255, 255, .028);
+  background-image: linear-gradient(
+    to bottom,
+    var(--glass-top) 0%,
+    var(--glass-mid) 55%,
+    var(--glass-bot) 100%
+  );
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+  border-radius: var(--r-panel);
+  box-shadow: var(--glass-shadow);
+}
+
+/* The border is drawn as an overlay rather than a plain `border` because it
+   isn't one colour: it is lit along the top edge and a hairline everywhere
+   else, which is the whole reason the surface reads as glass catching a light
+   rather than as a grey box. TTOGlass fades the top 16% from .14 to .039. */
+.glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    to bottom,
+    var(--edge-lit) 0%,
+    var(--edge-hair) 16%,
+    var(--edge-hair) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ===========================================================================
+   Layout
+   =========================================================================== */
+
+.page {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.narrow { max-width: 640px; }
+
+/* ===========================================================================
+   The bar at the top — the app's nav pill
+   =========================================================================== */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: var(--s3) var(--gutter);
+  /* The bar has to stay legible over whatever scrolls under it. */
+  background: linear-gradient(to bottom, rgba(14, 14, 16, .82), rgba(14, 14, 16, 0));
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.topbar__inner {
+  max-width: var(--page);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  font-family: Mali, cursive;
+  font-weight: 600;
+  font-size: var(--t-strong);
+  color: var(--cyan);
+  text-decoration: none;
+  /* Lit from inside, the way the icon writes it. */
+  text-shadow: 0 0 3px rgba(0, 191, 255, .5), 0 0 12px rgba(0, 191, 255, .25);
+  white-space: nowrap;
+}
+
+.wordmark img {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-chip);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .5);
+}
+
+.topbar__link {
+  font-size: var(--t-small);
+  font-weight: 600;
+  color: var(--ink-quiet);
+  text-decoration: none;
+  padding: var(--s1) var(--s3);
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition: color .18s ease, border-color .18s ease;
+}
+.topbar__link:hover {
+  color: var(--white);
+  border-color: var(--edge-hair);
+}
+
+/* ===========================================================================
+   Hero
+   =========================================================================== */
+
+.hero {
+  text-align: center;
+  padding: var(--s6) 0 var(--s7);
+}
+
+.hero__icon {
+  width: 84px;
+  height: 84px;
+  border-radius: 20px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .6), 0 0 0 1px var(--edge-hair);
+  margin-bottom: var(--s4);
+}
+
+h1 {
+  font-size: var(--t-display);
+  font-weight: 700;
+  letter-spacing: .2px;
+  line-height: 1.12;
+  margin: 0 0 var(--s2);
+}
+
+/* The tagline is content, not chrome, so it is set in Mali — the same
+   distinction the app draws between a label and something a person wrote. */
+.tagline {
+  font-family: Mali, cursive;
+  font-weight: 500;
+  font-size: var(--t-title);
+  line-height: 1.3;
+  color: var(--cyan);
+  margin: 0 0 var(--s4);
+}
+
+.lead {
+  font-size: var(--t-strong);
+  color: var(--ink-quiet);
+  margin: 0 auto var(--s5);
+  max-width: 44ch;
+}
+
+/* ===========================================================================
+   The App Store badge
+   ---------------------------------------------------------------------------
+   PLACEHOLDER. Apple requires its own badge artwork, which can't be redrawn by
+   hand — when the app is approved, download the official badge from
+   https://developer.apple.com/app-store/marketing/guidelines/ and replace the
+   whole <a class="badge"> element in index.html with it, pointing at the real
+   App Store link.
+   =========================================================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: var(--s3) var(--s5);
+  border-radius: var(--r-card);
+  text-decoration: none;
+  color: var(--white);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, .58);
+}
+.badge:active { transform: translateY(0); }
+
+.badge__glyph {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  fill: var(--white);
+  opacity: .92;
+}
+
+.badge__text {
+  text-align: left;
+  line-height: 1.2;
+}
+.badge__sup {
+  display: block;
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.badge__main {
+  display: block;
+  font-size: var(--t-strong);
+  font-weight: 700;
+}
+
+.badge-note {
+  font-size: var(--t-tiny);
+  color: var(--ink-faint);
+  margin: var(--s3) 0 0;
+}
+
+/* ===========================================================================
+   Screenshot slots
+   ---------------------------------------------------------------------------
+   Each frame points at a file in images/ that isn't there yet. Drop a PNG in at
+   that exact filename and it appears — no markup to edit. Until then the frame
+   shows its own label, because a broken-image icon on a landing page is worse
+   than an empty one. (The one line of JS in the page removes the missing <img>;
+   the label underneath is plain CSS.)
+   =========================================================================== */
+
+.shot {
+  margin: 0;
+  position: relative;
+  border-radius: var(--r-stage);
+  overflow: hidden;
+  /* A phone, at the aspect the app is drawn for. */
+  aspect-ratio: 393 / 852;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: inherit;
+}
+
+/* The empty state: a dashed outline and the name of the file that goes here. */
+.shot::before {
+  content: attr(data-placeholder);
+  position: absolute;
+  inset: var(--s3);
+  border: 1px dashed rgba(255, 255, 255, .13);
+  border-radius: var(--r-sheet);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--s4);
+  font-size: var(--t-tiny);
+  font-weight: 600;
+  letter-spacing: .3px;
+  color: var(--ink-faint);
+  pointer-events: none;
+}
+
+/* Once a real screenshot loads it covers the frame, so the label goes. */
+.shot:has(img)::before { display: none; }
+
+.shot--hero {
+  max-width: 300px;
+  margin: var(--s7) auto 0;
+}
+
+/* ===========================================================================
+   Sections
+   =========================================================================== */
+
+section { padding: var(--s7) 0; }
+
+.section-head {
+  text-align: center;
+  margin-bottom: var(--s6);
+}
+
+h2 {
+  font-size: var(--t-title);
+  font-weight: 700;
+  margin: 0 0 var(--s2);
+  letter-spacing: .2px;
+}
+
+.section-head p {
+  font-size: var(--t-base);
+  color: var(--ink-quiet);
+  margin: 0 auto;
+  max-width: 46ch;
+}
+
+/* ===========================================================================
+   The three tabs
+   ---------------------------------------------------------------------------
+   Each card wears its tab's identity colour (TTOTab.tint), so the page is
+   colour-coded the same way the app is.
+   =========================================================================== */
+
+.tabs {
+  display: grid;
+  gap: var(--s5);
+}
+
+.tab {
+  --accent: var(--cyan);
+  padding: var(--s5);
+  border-radius: var(--r-stage);
+  display: grid;
+  gap: var(--s4);
+}
+
+.tab--braindump { --accent: var(--tab-indigo-hi); }
+.tab--tasks     { --accent: var(--tab-blue-hi); }
+.tab--reflect   { --accent: var(--maroon-soft); }
+
+/* An accent glow riding the inside edge — the `accent:` parameter on
+   TTOGlass, which some surfaces in the app carry and most don't. */
+.tab::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(120% 60% at 50% 100%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 70%);
+  pointer-events: none;
+}
+
+.tab__body { position: relative; }
+
+/* The tab's name, in the lowercase the nav bar uses. */
+.tab__name {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  font-size: var(--t-tiny);
+  font-weight: 700;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--s3);
+}
+.tab__name::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 9px var(--accent);
+}
+
+.tab h3 {
+  font-size: var(--t-title);
+  font-weight: 700;
+  margin: 0 0 var(--s3);
+  line-height: 1.2;
+}
+
+.tab p {
+  margin: 0 0 var(--s3);
+  color: var(--ink-quiet);
+  font-size: var(--t-base);
+}
+.tab p:last-child { margin-bottom: 0; }
+
+/* The three horizons, and anything else that is a short list of named things.
+   Chip radius, chip type — TTORadius.chip. */
+.chips {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  padding: 0;
+  margin: var(--s4) 0 0;
+}
+
+.chips li {
+  font-size: var(--t-small);
+  font-weight: 600;
+  padding: var(--s1) var(--s3);
+  border-radius: var(--r-chip);
+  border: 1px solid var(--edge-hair);
+  background: rgba(255, 255, 255, .035);
+  color: var(--ink-quiet);
+}
+
+/* The horizon chips take their own colours from TimeHorizon.accent — cyan,
+   indigo, green, and in that order, because the list is a progression. */
+.chips li:nth-child(1) { color: var(--cyan);   border-color: color-mix(in srgb, var(--cyan) 30%, transparent); }
+.chips li:nth-child(2) { color: var(--indigo); border-color: color-mix(in srgb, var(--indigo) 30%, transparent); }
+.chips li:nth-child(3) { color: var(--green);  border-color: color-mix(in srgb, var(--green) 30%, transparent); }
+
+.tab .shot { max-width: 260px; margin-inline: auto; width: 100%; }
+
+/* ===========================================================================
+   Closing panel
+   =========================================================================== */
+
+.closing {
+  text-align: center;
+  padding: var(--s6) var(--s5);
+  border-radius: var(--r-stage);
+}
+
+.closing h2 { margin-bottom: var(--s3); }
+
+.closing p {
+  color: var(--ink-quiet);
+  margin: 0 auto var(--s5);
+  max-width: 40ch;
+}
+
+/* A line in the app's own hand, for the one sentence that should sound like a
+   person rather than a product. */
+.hand {
+  font-family: Mali, cursive;
+  font-weight: 500;
+  font-size: var(--t-strong);
+  color: var(--silver);
+}
+
+/* ===========================================================================
+   Support page
+   ---------------------------------------------------------------------------
+   Same tokens, lighter hand: no glows behind sections, less glass, more room.
+   =========================================================================== */
+
+.doc { padding: var(--s6) 0 var(--s7); }
+
+.doc h1 { text-align: center; }
+
+.doc__lead {
+  text-align: center;
+  color: var(--ink-quiet);
+  font-size: var(--t-strong);
+  margin: 0 auto var(--s7);
+  max-width: 42ch;
+}
+
+.faq { display: grid; gap: var(--s3); }
+
+/* <details> rather than a script: the browser already knows how to open and
+   close one, and it stays open when someone prints or searches the page. */
+.faq details {
+  border-radius: var(--r-card);
+  padding: 0;
+  overflow: hidden;
+  /* Lighter than the glass on the landing page — enough of an edge to tell one
+     question from the next, and no blur, because there is nothing behind these
+     worth seeing through to. */
+  background: rgba(255, 255, 255, .022);
+  border: 1px solid rgba(255, 255, 255, .055);
+  transition: border-color .18s ease, background-color .18s ease;
+}
+.faq details:hover { border-color: var(--edge-hair); }
+.faq details[open] {
+  background: rgba(255, 255, 255, .034);
+  border-color: var(--edge-hair);
+}
+
+.faq summary {
+  cursor: pointer;
+  list-style: none;
+  padding: var(--s4) var(--s5);
+  font-size: var(--t-base);
+  font-weight: 600;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+}
+.faq summary::-webkit-details-marker { display: none; }
+
+/* The chevron turns instead of swapping glyph, so nothing jumps. */
+.faq summary::after {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--ink-faint);
+  border-bottom: 2px solid var(--ink-faint);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform .2s ease;
+}
+.faq details[open] summary::after {
+  transform: rotate(-135deg) translate(-2px, -2px);
+}
+
+.faq details > div {
+  padding: 0 var(--s5) var(--s4);
+  color: var(--ink-quiet);
+  font-size: var(--t-base);
+}
+.faq details > div p { margin: 0 0 var(--s3); }
+.faq details > div p:last-child { margin-bottom: 0; }
+
+.contact {
+  margin-top: var(--s6);
+  padding: var(--s5);
+  border-radius: var(--r-panel);
+  text-align: center;
+}
+
+.contact h2 { margin-bottom: var(--s2); }
+.contact p { color: var(--ink-quiet); margin: 0 0 var(--s4); }
+
+.contact__mail {
+  font-family: Mali, cursive;
+  font-weight: 600;
+  font-size: var(--t-title);
+  color: var(--cyan);
+  text-decoration: none;
+  word-break: break-word;
+  border-bottom: 1px solid color-mix(in srgb, var(--cyan) 40%, transparent);
+}
+.contact__mail:hover { border-bottom-color: var(--cyan); }
+
+.contact__note {
+  font-size: var(--t-tiny);
+  color: var(--ink-faint);
+  margin: var(--s4) 0 0;
+}
+
+/* ===========================================================================
+   Footer
+   =========================================================================== */
+
+footer {
+  padding: var(--s6) var(--gutter) var(--s7);
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, .05);
+  margin-top: var(--s6);
+}
+
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s2) var(--s5);
+  margin: 0 0 var(--s4);
+  padding: 0;
+  list-style: none;
+}
+
+footer a {
+  color: var(--ink-quiet);
+  text-decoration: none;
+  font-size: var(--t-small);
+  font-weight: 600;
+  white-space: nowrap;
+}
+footer a:hover { color: var(--white); }
+
+.footer__fine {
+  font-size: var(--t-tiny);
+  color: var(--ink-faint);
+  margin: 0;
+}
+
+a { color: var(--cyan); }
+
+/* Focus has to be visible, and the app's own accent is the obvious ring. */
+:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+  border-radius: var(--r-chip);
+}
+
+/* ===========================================================================
+   Wider screens
+   ---------------------------------------------------------------------------
+   Phone layout is the one above; these only add room. Most of the traffic
+   arrives from an App Store listing on a phone.
+   =========================================================================== */
+
+@media (min-width: 600px) {
+  :root {
+    --t-display: 46px;
+    --t-title: 27px;
+    --gutter: 32px;
+  }
+  .hero { padding: var(--s7) 0 var(--s8); }
+  .hero__icon { width: 104px; height: 104px; border-radius: 24px; }
+  .shot--hero { max-width: 340px; }
+}
+
+@media (min-width: 900px) {
+  :root { --t-display: 56px; }
+
+  /* The tab cards turn into a screenshot beside its explanation, and alternate
+     sides so the eye has somewhere new to land on each one. */
+  .tab {
+    grid-template-columns: 260px 1fr;
+    align-items: center;
+    gap: var(--s6);
+    padding: var(--s6);
+  }
+  .tab:nth-child(even) .shot { order: 2; }
+  .tab .shot { max-width: none; }
+}
+
+/* Somebody who has asked their phone to stop animating things gets a page that
+   doesn't. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
