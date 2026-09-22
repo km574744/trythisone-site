@@ -37,9 +37,9 @@ If one of those moves in the app, move it here.
   [Apple's marketing guidelines](https://developer.apple.com/app-store/marketing/guidelines/)
   and replace the whole `<a class="badge">` element with it and the real link.
 - **The screenshots are missing.** See `images/README.md`.
-- **The FAQ copy is a first draft.** Read it through before submitting. The
-  billing answer describes a free app with nothing to buy — rewrite it the day
-  that stops being true.
+- **The FAQ copy is a first draft.** Read it through before submitting. It
+  matches what the app does today; the billing answer is the one to revisit if
+  the app ever stops being free.
 
 ## Editing
 
