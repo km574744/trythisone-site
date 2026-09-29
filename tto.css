@@ -147,27 +147,6 @@ body {
     radial-gradient(68% 50% at 90% 112%, rgba(21, 68, 143, .18), transparent 60%);
 }
 
-/* A section can borrow another tab's sky. Same two-glow shape, that tab's
-   colours — Brain Dump's indigo, Reflect's maroon. */
-.sky { position: relative; isolation: isolate; }
-.sky::before {
-  content: "";
-  position: absolute;
-  inset: -10% -20%;
-  z-index: -1;
-  pointer-events: none;
-}
-.sky--braindump::before {
-  background:
-    radial-gradient(54% 38% at 10% -4%,  rgba(90, 84, 224, .10), transparent 60%),
-    radial-gradient(66% 48% at 92% 108%, rgba(47, 44, 158, .20), transparent 60%);
-}
-.sky--reflect::before {
-  background:
-    radial-gradient(56% 40% at 12% -5%,  rgba(166, 62, 68, .10), transparent 60%),
-    radial-gradient(66% 48% at 90% 108%, rgba(119, 32, 42, .22), transparent 60%);
-}
-
 /* ===========================================================================
    Frosted glass — the one surface the whole app is built from
    =========================================================================== */
@@ -283,22 +262,6 @@ body {
   border-color: var(--edge-hair);
 }
 
-/* ===========================================================================
-   Hero
-   =========================================================================== */
-
-.hero {
-  text-align: center;
-  padding: var(--s6) 0 var(--s7);
-}
-
-.hero__icon {
-  width: 84px;
-  height: 84px;
-  border-radius: 20px;
-  box-shadow: 0 14px 34px rgba(0, 0, 0, .6), 0 0 0 1px var(--edge-hair);
-  margin-bottom: var(--s4);
-}
 
 h1 {
   font-size: var(--t-display);
@@ -306,24 +269,6 @@ h1 {
   letter-spacing: .2px;
   line-height: 1.12;
   margin: 0 0 var(--s2);
-}
-
-/* The tagline is content, not chrome, so it is set in Mali — the same
-   distinction the app draws between a label and something a person wrote. */
-.tagline {
-  font-family: Mali, cursive;
-  font-weight: 500;
-  font-size: var(--t-title);
-  line-height: 1.3;
-  color: var(--cyan);
-  margin: 0 0 var(--s4);
-}
-
-.lead {
-  font-size: var(--t-strong);
-  color: var(--ink-quiet);
-  margin: 0 auto var(--s5);
-  max-width: 44ch;
 }
 
 /* ===========================================================================
@@ -384,62 +329,6 @@ h1 {
   margin: var(--s3) 0 0;
 }
 
-/* ===========================================================================
-   Screenshot slots
-   ---------------------------------------------------------------------------
-   Each frame points at a file in images/ that isn't there yet. Drop a PNG in at
-   that exact filename and it appears — no markup to edit. Until then the frame
-   shows its own label, because a broken-image icon on a landing page is worse
-   than an empty one. (The one line of JS in the page removes the missing <img>;
-   the label underneath is plain CSS.)
-   =========================================================================== */
-
-.shot {
-  margin: 0;
-  position: relative;
-  border-radius: var(--r-stage);
-  overflow: hidden;
-  /* A phone, at the aspect the app is drawn for. */
-  aspect-ratio: 393 / 852;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.shot img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  border-radius: inherit;
-}
-
-/* The empty state: a dashed outline and the name of the file that goes here. */
-.shot::before {
-  content: attr(data-placeholder);
-  position: absolute;
-  inset: var(--s3);
-  border: 1px dashed rgba(255, 255, 255, .13);
-  border-radius: var(--r-sheet);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: var(--s4);
-  font-size: var(--t-tiny);
-  font-weight: 600;
-  letter-spacing: .3px;
-  color: var(--ink-faint);
-  pointer-events: none;
-}
-
-/* Once a real screenshot loads it covers the frame, so the label goes. */
-.shot:has(img)::before { display: none; }
-
-.shot--hero {
-  max-width: 300px;
-  margin: var(--s7) auto 0;
-}
 
 /* ===========================================================================
    Sections
@@ -466,132 +355,348 @@ h2 {
   max-width: 46ch;
 }
 
+
 /* ===========================================================================
-   The three tabs
+   Landing page
    ---------------------------------------------------------------------------
-   Each card wears its tab's identity colour (TTOTab.tint), so the page is
-   colour-coded the same way the app is.
+   Built from the same pieces as the App Store screenshots: a glowing sign
+   pinned above the phone, memos pinned around it, and the grid floor the
+   splash screen stands on. The memos are the app's own cards: near-black
+   board, Mali ink in one of the three accents, a blue pin, and the short tick
+   under the pin that every memo carries (BoardMemoView).
    =========================================================================== */
 
-.tabs {
-  display: grid;
-  gap: var(--s5);
+/* The pin. A glossy blue ball, lit from the upper left, casting down. */
+.pin {
+  position: absolute;
+  left: 50%;
+  top: -14px;
+  width: 28px;
+  height: 28px;
+  margin-left: -14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%,
+    #cfe6ff 0%, #5aa2ff 18%, #1f5fe0 48%, #0b2f8a 80%, #061a52 100%);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, .6), 0 1px 2px rgba(0, 0, 0, .5);
 }
 
-.tab {
-  --accent: var(--cyan);
-  padding: var(--s5);
-  border-radius: var(--r-stage);
-  display: grid;
-  gap: var(--s4);
+/* The sign: the splash screen's glowing note, blown up to hold a headline.
+   The glow stays soft, a lit edge rather than a neon tube. */
+.sign {
+  position: relative;
+  display: inline-block;
+  max-width: 680px;
+  padding: 40px clamp(20px, 5vw, 44px) 32px;
+  background: linear-gradient(175deg, #16171c 0%, #0e0f12 100%);
+  border: 2px solid rgba(0, 191, 255, .72);
+  border-radius: 8px;
+  box-shadow:
+    0 0 18px rgba(0, 191, 255, .26),
+    inset 0 0 22px rgba(0, 191, 255, .08),
+    0 24px 50px rgba(0, 0, 0, .6);
+  transform: rotate(-1.2deg);
 }
 
-.tab--braindump { --accent: var(--tab-indigo-hi); }
-.tab--tasks     { --accent: var(--tab-blue-hi); }
-.tab--reflect   { --accent: var(--maroon-soft); }
+.sign h1,
+.sign h2 {
+  margin: 0;
+  font-family: Mali, cursive;
+  font-weight: 600;
+  line-height: 1.18;
+  color: #8fe2ff;
+  text-shadow: 0 0 12px rgba(0, 191, 255, .5), 0 0 28px rgba(0, 191, 255, .18);
+}
+.sign h1 { font-size: clamp(32px, 7.4vw, 58px); }
+.sign h2 { font-size: clamp(26px, 5.6vw, 42px); }
 
-/* An accent glow riding the inside edge — the `accent:` parameter on
-   TTOGlass, which some surfaces in the app carry and most don't. */
-.tab::before {
+/* A memo, pinned. */
+.note {
+  position: absolute;
+  z-index: 2;
+  width: clamp(132px, 30vw, 200px);
+  margin: 0;
+  padding: 30px 18px 18px;
+  border-radius: 10px;
+  background: linear-gradient(172deg, #303137 0%, #26272c 100%);
+  border: 1px solid rgba(255, 255, 255, .08);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .6), 0 4px 10px rgba(0, 0, 0, .45);
+  font-family: Mali, cursive;
+  font-weight: 500;
+  font-size: clamp(15px, 3.6vw, 19px);
+  line-height: 1.3;
+  text-align: left;
+  color: var(--ink);
+}
+.note::before {                     /* the pin */
   content: "";
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(120% 60% at 50% 100%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 70%);
-  pointer-events: none;
-}
-
-.tab__body { position: relative; }
-
-/* The tab's name, in the lowercase the nav bar uses. */
-.tab__name {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s2);
-  font-size: var(--t-tiny);
-  font-weight: 700;
-  letter-spacing: 1.1px;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin: 0 0 var(--s3);
-}
-.tab__name::before {
-  content: "";
-  width: 7px;
-  height: 7px;
+  left: 50%;
+  top: -12px;
+  width: 24px;
+  height: 24px;
+  margin-left: -12px;
   border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 9px var(--accent);
+  background: radial-gradient(circle at 34% 30%,
+    #cfe6ff 0%, #5aa2ff 18%, #1f5fe0 48%, #0b2f8a 80%, #061a52 100%);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, .6);
+}
+.note::after {                      /* the tick under it */
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 18px;
+  width: 30px;
+  height: 2px;
+  margin-left: -15px;
+  border-radius: 2px;
+  background: var(--ink);
+  opacity: .45;
 }
 
-.tab h3 {
-  font-size: var(--t-title);
-  font-weight: 700;
-  margin: 0 0 var(--s3);
-  line-height: 1.2;
+/* A phone, in the frame the screenshots wear. */
+.phone {
+  position: relative;
+  z-index: 1;
+  width: min(300px, 70vw);
+  margin: 0 auto;
+  padding: 9px;
+  border-radius: 48px;
+  background: linear-gradient(160deg, #1b1c21, #08080a 40%, #121317);
+  box-shadow:
+    0 0 0 1.5px #30333b,
+    0 0 0 3px #0a0a0c,
+    0 30px 70px rgba(0, 0, 0, .7),
+    0 0 90px rgba(0, 191, 255, .07);
+}
+.phone img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 39px;
 }
 
-.tab p {
-  margin: 0 0 var(--s3);
+/* -- Hero ----------------------------------------------------------------- */
+
+/* The floor below is deliberately wider than the page. `overflow-x: hidden`
+   on body is not enough to stop it: iOS Safari lets the page pan sideways
+   into anything the viewport doesn't clip itself. `clip` cuts it off without
+   making main a scroll container. */
+main { overflow-x: clip; }
+
+.lp-hero {
+  text-align: center;
+  padding: var(--s7) 0 0;
+}
+
+.lp-lead {
+  font-size: var(--t-strong);
   color: var(--ink-quiet);
-  font-size: var(--t-base);
+  max-width: 46ch;
+  margin: var(--s6) auto var(--s5);
 }
-.tab p:last-child { margin-bottom: 0; }
 
-/* The three horizons, and anything else that is a short list of named things.
-   Chip radius, chip type — TTORadius.chip. */
+.stage {
+  position: relative;
+  max-width: 640px;
+  margin: var(--s7) auto 0;
+  padding-bottom: var(--s7);
+}
+
+.note--l { left: 0;  top: 24%; transform: rotate(-4deg); }
+.note--r { right: 0; top: 58%; transform: rotate(3.5deg); }
+
+/* The grid floor from the splash screen, running away from you under the
+   phone. Wider than the page on purpose: body clips the overflow. */
+.floor {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 1600px;
+  height: 420px;
+  margin-left: -800px;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0, 191, 255, .34) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgba(0, 191, 255, .34) 1.5px, transparent 1.5px);
+  background-size: 80px 80px;
+  background-position: center bottom;
+  transform: perspective(520px) rotateX(64deg);
+  transform-origin: 50% 100%;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, .7) 35%, transparent 85%);
+          mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, .7) 35%, transparent 85%);
+}
+
+/* -- The pitch ------------------------------------------------------------- */
+
+.statement {
+  text-align: center;
+  padding: var(--s8) 0;
+}
+.statement p {
+  margin: 0 auto;
+  max-width: 24ch;
+  font-family: Mali, cursive;
+  font-weight: 500;
+  font-size: clamp(26px, 5.4vw, 42px);
+  line-height: 1.32;
+  color: var(--white);
+}
+.statement span { color: var(--cyan); }
+.statement span:nth-of-type(2) { color: var(--green); }
+.statement span:nth-of-type(3) { color: var(--indigo); }
+
+/* -- A feature: words beside the phone that shows it ----------------------- */
+
+.feature {
+  display: grid;
+  gap: var(--s6);
+  align-items: center;
+}
+
+.feature__text h2 {
+  font-size: var(--t-title);
+  line-height: 1.2;
+  margin: 0 0 var(--s4);
+}
+.feature__text p {
+  color: var(--ink-quiet);
+  font-size: var(--t-strong);
+  margin: 0 0 var(--s4);
+  max-width: 48ch;
+}
+
+/* The tab's name, dressed the way the app's tab bar dresses it. */
+.pill {
+  display: inline-block;
+  margin: 0 0 var(--s4) !important;
+  padding: 4px 16px;
+  border-radius: 999px;
+  font-size: var(--t-small) !important;
+  font-weight: 600;
+  letter-spacing: .3px;
+  color: var(--white) !important;
+}
+.pill--tasks     { background: rgba(47, 111, 224, .28); box-shadow: inset 0 0 0 1px rgba(47, 111, 224, .6); }
+.pill--braindump { background: rgba(90, 84, 224, .28);  box-shadow: inset 0 0 0 1px rgba(90, 84, 224, .6); }
+.pill--reflect   { background: rgba(166, 62, 68, .30);  box-shadow: inset 0 0 0 1px rgba(166, 62, 68, .65); }
+
 .chips {
-  list-style: none;
   display: flex;
   flex-wrap: wrap;
   gap: var(--s2);
+  margin: 0 0 var(--s4);
   padding: 0;
-  margin: var(--s4) 0 0;
+  list-style: none;
 }
-
 .chips li {
-  font-size: var(--t-small);
-  font-weight: 600;
-  padding: var(--s1) var(--s3);
+  padding: 4px 12px;
   border-radius: var(--r-chip);
-  border: 1px solid var(--edge-hair);
-  background: rgba(255, 255, 255, .035);
-  color: var(--ink-quiet);
+  background: rgba(255, 255, 255, .04);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08);
+  font-family: Mali, cursive;
+  font-size: var(--t-base);
+  color: var(--ink);
 }
 
-/* The horizon chips take their own colours from TimeHorizon.accent — cyan,
-   indigo, green, and in that order, because the list is a progression. */
-.chips li:nth-child(1) { color: var(--cyan);   border-color: color-mix(in srgb, var(--cyan) 30%, transparent); }
-.chips li:nth-child(2) { color: var(--indigo); border-color: color-mix(in srgb, var(--indigo) 30%, transparent); }
-.chips li:nth-child(3) { color: var(--green);  border-color: color-mix(in srgb, var(--green) 30%, transparent); }
+/* -- Five ways to write something down ------------------------------------ */
 
-.tab .shot { max-width: 260px; margin-inline: auto; width: 100%; }
-
-/* ===========================================================================
-   Closing panel
-   =========================================================================== */
-
-.closing {
+.lp-head {
   text-align: center;
-  padding: var(--s6) var(--s5);
-  border-radius: var(--r-stage);
+  margin-bottom: var(--s6);
 }
-
-.closing h2 { margin-bottom: var(--s3); }
-
-.closing p {
+.lp-head h3 {
+  font-size: var(--t-title);
+  margin: 0 0 var(--s2);
+}
+.lp-head p {
   color: var(--ink-quiet);
-  margin: 0 auto var(--s5);
-  max-width: 40ch;
+  margin: 0;
 }
 
-/* A line in the app's own hand, for the one sentence that should sound like a
-   person rather than a product. */
-.hand {
+.tools__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(146px, 1fr));
+  gap: var(--s5) var(--s4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each tool is a memo on the wall, tilted a little either way. */
+.tool {
+  position: relative;
+  padding: var(--s5) var(--s4) var(--s4);
+  border-radius: 10px;
+  background: linear-gradient(172deg, #2b2c31 0%, #232428 100%);
+  border: 1px solid rgba(255, 255, 255, .07);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, .5);
+  transform: rotate(-1deg);
+}
+.tool:nth-child(even) { transform: rotate(1.2deg); }
+.tool p { margin: 0; color: var(--ink-quiet); font-size: var(--t-base); line-height: 1.45; }
+
+/* The dock's round button, holding the tool's icon. */
+.tool__icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--s3);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 30%, #3a3b41, #1e1f23);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+.tool__icon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: var(--white);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tool .tool__name {
+  font-family: Mali, cursive;
+  font-weight: 600;
+  font-size: var(--t-strong);
+  color: var(--ink);
+  margin-bottom: var(--s1);
+}
+
+/* -- Closing --------------------------------------------------------------- */
+
+.lp-close {
+  text-align: center;
+  padding: var(--s8) 0 var(--s7);
+}
+.sign--close { max-width: 600px; }
+.sign--close p {
+  margin: var(--s3) 0 0;
   font-family: Mali, cursive;
   font-weight: 500;
-  font-size: var(--t-strong);
-  color: var(--silver);
+  font-size: clamp(19px, 3.6vw, 24px);
+  color: var(--white);
+}
+.signoff {
+  font-family: Mali, cursive;
+  font-weight: 500;
+  font-size: var(--t-title);
+  color: var(--cyan);
+  margin: var(--s7) 0 var(--s5);
+}
+
+/* -- Arrival --------------------------------------------------------------
+   Each section settles in once as it scrolls into view and then stays put.
+   Only when scripting is on, so nothing is ever hidden without a way back. */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.js .reveal.in {
+  opacity: 1;
+  transform: none;
 }
 
 /* ===========================================================================
@@ -742,6 +847,7 @@ a { color: var(--cyan); }
   border-radius: var(--r-chip);
 }
 
+
 /* ===========================================================================
    Wider screens
    ---------------------------------------------------------------------------
@@ -752,27 +858,25 @@ a { color: var(--cyan); }
 @media (min-width: 600px) {
   :root {
     --t-display: 46px;
-    --t-title: 27px;
+    --t-title: 30px;
     --gutter: 32px;
   }
-  .hero { padding: var(--s7) 0 var(--s8); }
-  .hero__icon { width: 104px; height: 104px; border-radius: 24px; }
-  .shot--hero { max-width: 340px; }
 }
 
-@media (min-width: 900px) {
-  :root { --t-display: 56px; }
-
-  /* The tab cards turn into a screenshot beside its explanation, and alternate
-     sides so the eye has somewhere new to land on each one. */
-  .tab {
-    grid-template-columns: 260px 1fr;
-    align-items: center;
-    gap: var(--s6);
-    padding: var(--s6);
+@media (min-width: 860px) {
+  /* A feature becomes words beside the phone, alternating sides so the eye
+     has somewhere new to land each time. */
+  .feature {
+    grid-template-columns: 1fr 300px;
+    gap: var(--s8);
+    padding: var(--s8) 0;
   }
-  .tab:nth-child(even) .shot { order: 2; }
-  .tab .shot { max-width: none; }
+  .feature--flip .phone { order: -1; }
+  .feature .phone { width: 300px; }
+  .tools { padding: var(--s7) 0 var(--s8); }
+  .stage { padding-bottom: var(--s8); }
+  .note--l { left: -10px; }
+  .note--r { right: -10px; }
 }
 
 /* Somebody who has asked their phone to stop animating things gets a page that

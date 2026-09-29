@@ -2,7 +2,7 @@
 
 The marketing and support pages for **Try This One**, an iPhone app.
 
-Two pages, plain HTML and one stylesheet. No build step, no dependencies —
+Plain HTML pages and one stylesheet. No build step, no dependencies —
 edit a file, commit, push, and GitHub Pages republishes it.
 
 ```
@@ -36,7 +36,9 @@ If one of those moves in the app, move it here.
   take the badge from
   [Apple's marketing guidelines](https://developer.apple.com/app-store/marketing/guidelines/)
   and replace the whole `<a class="badge">` element with it and the real link.
-- **The screenshots are missing.** See `images/README.md`.
+- **The landing copy is the pitch.** `index.html` is built from the pitch
+  written Sep 28. Every feature it names is in the release build; if a
+  `Features` flag changes what v1 ships, change the page with it.
 - **The FAQ copy is a first draft.** Read it through before submitting. It
   matches what the app does today; the billing answer is the one to revisit if
   the app ever stops being free.

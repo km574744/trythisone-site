@@ -4,23 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Try This One — for creative minds &amp; thought</title>
-<meta name="description" content="A creative extension for anyone doing thoughtful work. Dump what's in your head onto an infinite canvas, keep tasks across three time horizons, and walk through what's in the way, one step at a time.">
+<title>try this one — a place for everything running your mind</title>
+<meta name="description" content="Unfinished thoughts, future plans, reminders for tomorrow, notes to self, half-formed ideas. Write it out and see it in front of you. An iPhone app with a wall for your thoughts, lists for your day, and walkthroughs for what's crowding you.">
 <meta name="theme-color" content="#0e0e10">
 
 <link rel="icon" href="assets/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Try This One">
-<meta property="og:description" content="for creative minds &amp; thought">
-<meta property="og:image" content="assets/icon.png">
+<meta property="og:title" content="try this one">
+<meta property="og:description" content="A place for everything running your mind. Give it somewhere to go.">
+<meta property="og:image" content="https://km574744.github.io/trythisone-site/assets/icon.png">
 <meta name="twitter:card" content="summary">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Mali:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="tto.css">
+<script>document.documentElement.classList.add('js')</script>
 </head>
 
 <body>
@@ -41,27 +42,25 @@
 <main>
 
   <!-- =====================================================================
-       Hero
+       Hero — the sign, the pitch, and the wall
        ===================================================================== -->
   <div class="page">
-    <section class="hero">
-      <img class="hero__icon" src="assets/icon.png" alt="The Try This One app icon" width="104" height="104">
+    <section class="lp-hero">
 
-      <h1>Try This One</h1>
-      <p class="tagline">for creative minds &amp; thought</p>
+      <div class="sign">
+        <i class="pin" aria-hidden="true"></i>
+        <h1>a place for everything running&nbsp;your&nbsp;mind</h1>
+      </div>
 
-      <p class="lead">
-        A creative extension for anyone doing thoughtful work. Get what's in
-        your head out of it, put it somewhere you can see all of at once, and
-        come back to it when you're ready.
+      <p class="lp-lead">
+        Unfinished thoughts, future plans, reminders for tomorrow, notes to
+        self, half-formed ideas — you name it. Anytime you have a thought,
+        write it out and see it in front of you.
       </p>
 
-      <!-- PLACEHOLDER BADGE.
-           The app isn't on the App Store yet, so this is a stand-in drawn in
-           the app's own style and pointing nowhere. Apple's badge has to be
-           Apple's own artwork — when the app is approved, download it from
-           developer.apple.com/app-store/marketing/guidelines/ and replace this
-           whole <a> with it, pointing at the real App Store link. -->
+      <!-- PLACEHOLDER BADGE — see the note on .badge in tto.css. When the app
+           is approved, replace this whole <a> with Apple's official badge
+           artwork, pointing at the real App Store link. -->
       <a class="badge glass" href="#" aria-label="Coming soon to the App Store">
         <svg class="badge__glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
           <path d="M12 3a1 1 0 0 1 1 1v9.59l3.3-3.3a1 1 0 1 1 1.4 1.42l-5 5a1 1 0 0 1-1.4 0l-5-5a1 1 0 1 1 1.4-1.42l3.3 3.3V4a1 1 0 0 1 1-1Zm-7 14a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v1.5A1.5 1.5 0 0 1 18.5 21h-13A1.5 1.5 0 0 1 4 19.5V18a1 1 0 0 1 1-1Z"/>
@@ -71,100 +70,178 @@
           <span class="badge__main">the App Store</span>
         </span>
       </a>
+      <p class="badge-note">iPhone · iOS 18 and later · free</p>
 
-      <p class="badge-note">iPhone · iOS 17 and later</p>
+      <div class="stage">
+        <div class="floor" aria-hidden="true"></div>
+        <div class="phone">
+          <img src="images/wall.jpg" width="607" height="1320"
+               alt="The brain dump wall in try this one, covered in memos: call grandma sunday, email maya back about saturday, a voice memo with a story idea, a list for this week, and more">
+        </div>
+        <p class="note note--l" style="--ink:var(--green)" aria-hidden="true">the idea from the shower</p>
+        <p class="note note--r" style="--ink:var(--indigo)" aria-hidden="true">tomorrow: reply to maya</p>
+      </div>
 
-      <figure class="shot glass shot--hero"
-              data-placeholder="images/hero.png">
-        <img src="images/hero.png" alt="Try This One running on an iPhone" loading="eager">
-      </figure>
     </section>
   </div>
 
   <!-- =====================================================================
-       How it works — the three tabs
+       The pitch, in one sentence
        ===================================================================== -->
   <div class="page">
-    <section id="how">
-      <div class="section-head">
-        <h2>Three tabs, and that's the whole app</h2>
+    <section class="statement reveal">
+      <p>
+        A mind that isn’t carrying everything alone is a mind that’s free to
+        <span>think clearly</span>, <span>feel lighter</span>, and
+        <span>actually move forward</span>.
+      </p>
+    </section>
+  </div>
+
+  <!-- =====================================================================
+       Brain Dump
+       ===================================================================== -->
+  <div class="page">
+    <section class="feature reveal" id="brain-dump">
+      <div class="feature__text">
+        <p class="pill pill--braindump">brain dump</p>
+        <h2>The core of try this one</h2>
         <p>
-          One for getting it out, one for what you've decided to do, and one for
-          the days when neither of those is happening.
+          Nothing stays stuck in your head fighting for space. It gets out, it
+          gets seen, and it stops weighing on you the moment it’s in front of
+          you instead of behind your eyes.
+        </p>
+        <p>
+          Write down anything on your mind, at any time, and it becomes a memo.
+          Move your memos anywhere on the canvas and lay out all your thoughts,
+          all in front of your eyes.
         </p>
       </div>
+      <div class="phone phone--side">
+        <img src="images/mind-dump.jpg" width="607" height="1320" loading="lazy"
+             alt="Memos landing on the wall one at a time: rent is due, never replied to maya, am i actually good at my job, dad's birthday in two weeks">
+      </div>
+    </section>
 
-      <div class="tabs">
+    <!-- Five ways to write something down -->
+    <section class="tools reveal" aria-labelledby="tools-title">
+      <div class="lp-head">
+        <h3 id="tools-title">Five ways to write something down</h3>
+        <p>Anytime you write something down, you choose what it becomes.</p>
+      </div>
 
-        <!-- Brain Dump -->
-        <article class="tab tab--braindump glass sky sky--braindump">
-          <figure class="shot" data-placeholder="images/brain-dump.png">
-            <img src="images/brain-dump.png" alt="The Brain Dump canvas, memos scattered across a wall" loading="lazy">
-          </figure>
-          <div class="tab__body">
-            <p class="tab__name">brain dump</p>
-            <h3>An infinite wall you can push things around on</h3>
-            <p>
-              Write a note and it lands on the wall. Drag it, pinch the whole
-              board, draw on a memo, record one out loud. Nothing is filed and
-              nothing is sorted until you want it to be.
-            </p>
-            <p>
-              The notes have weight — drop one on top of another and it makes
-              room for itself. Pile them up, spread them out, leave them where
-              they fell.
-            </p>
-          </div>
-        </article>
+      <ul class="tools__grid">
+        <li class="tool" style="--ink:var(--cyan)">
+          <span class="tool__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 4.5h14v9.5l-5.5 5.5H5z"/><path d="M13.5 19.5V14H19"/></svg>
+          </span>
+          <p class="tool__name">Memo</p>
+          <p>A quick note, written the moment a thought shows up.</p>
+        </li>
+        <li class="tool" style="--ink:var(--silver)">
+          <span class="tool__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 5.5h8M8 5.5v12"/><path d="M13 18l7-7M14.5 11H20v5.5"/></svg>
+          </span>
+          <p class="tool__name">Objects</p>
+          <p>Text, arrows and drawing, for thoughts that aren’t just words.</p>
+        </li>
+        <li class="tool" style="--ink:var(--green)">
+          <span class="tool__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5-5 4 4 3-3 4 4"/></svg>
+          </span>
+          <p class="tool__name">Image</p>
+          <p>A photo from your library, or a drawing, right where it’s relevant.</p>
+        </li>
+        <li class="tool" style="--ink:var(--indigo)">
+          <span class="tool__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 7h.01M5 12h.01M5 17h.01"/><path d="M9 7h11M9 12h11M9 17h11"/></svg>
+          </span>
+          <p class="tool__name">List</p>
+          <p>A running set of items, kept together as one.</p>
+        </li>
+        <li class="tool" style="--ink:var(--green)">
+          <span class="tool__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>
+          </span>
+          <p class="tool__name">Voice memo</p>
+          <p>A thought spoken instead of typed, for whenever you need it.</p>
+        </li>
+      </ul>
+    </section>
 
-        <!-- Tasks -->
-        <article class="tab tab--tasks glass">
-          <figure class="shot" data-placeholder="images/tasks.png">
-            <img src="images/tasks.png" alt="The Tasks screen, three shelves of tasks" loading="lazy">
-          </figure>
-          <div class="tab__body">
-            <p class="tab__name">tasks</p>
-            <h3>Three shelves, not one list</h3>
-            <p>
-              Everything you've decided to do sits on one of three shelves,
-              sorted by how far away it is rather than by how important someone
-              says it is.
-            </p>
-            <ul class="chips">
-              <li>now</li>
-              <li>later</li>
-              <li>eventually</li>
-            </ul>
-            <p>
-              A task can carry a time, and the shelf shades with the clock — the
-              morning end pale, the evening end deep — so a glance tells you
-              where in the day you are.
-            </p>
-          </div>
-        </article>
+    <!-- Projects -->
+    <section class="feature feature--flip reveal">
+      <div class="feature__text">
+        <p class="pill pill--braindump">projects</p>
+        <h2>A wall for every project</h2>
+        <p>
+          Gather your memos into projects of their own, each with its own wall,
+          and take a brand new set of thoughts and ideas further.
+        </p>
+        <p>
+          The moment your mind is out in the open, you can finally see
+          everything you’re carrying — and everything you’re capable of.
+        </p>
+      </div>
+      <div class="phone phone--side">
+        <img src="images/projects.jpg" width="607" height="1320" loading="lazy"
+             alt="The projects drawer open over the wall, listing short story, apartment and pottery">
+      </div>
+    </section>
+  </div>
 
-        <!-- Reflect -->
-        <article class="tab tab--reflect glass sky sky--reflect">
-          <figure class="shot" data-placeholder="images/reflect.png">
-            <img src="images/reflect.png" alt="A guided walkthrough in the Reflect tab" loading="lazy">
-          </figure>
-          <div class="tab__body">
-            <p class="tab__name">reflect</p>
-            <h3>Walkthroughs, one step at a time</h3>
-            <p>
-              Each one is a method that would work on a sheet of paper with a
-              pen and nothing else. The app only holds the steps and keeps the
-              pace.
-            </p>
-            <p>
-              A mind dump for when there's too much at once. A walkthrough for
-              when you know the task and you're doing everything except it. What
-              you write ends up back on the wall, and the ones worth doing
-              become tasks.
-            </p>
-          </div>
-        </article>
+  <!-- =====================================================================
+       Tasks
+       ===================================================================== -->
+  <div class="page">
+    <section class="feature reveal" id="tasks">
+      <div class="feature__text">
+        <p class="pill pill--tasks">tasks</p>
+        <h2>Plan the day, and keep the loose ends</h2>
+        <p>
+          Plan out your day and organize everything that needs doing. Write out
+          tasks, give them a time, and get a reminder when it comes round.
+        </p>
+        <ul class="chips" aria-label="Lists">
+          <li style="--ink:var(--cyan)">your list</li>
+          <li style="--ink:var(--indigo)">for later</li>
+          <li style="--ink:var(--green)">eventually</li>
+          <li style="--ink:var(--maroon-soft)">+ one of your own</li>
+        </ul>
+        <p>
+          Underneath your lists there’s space for quick notes: thoughts,
+          reminders and notes to self that don’t need to be tasks yet.
+        </p>
+      </div>
+      <div class="phone phone--side">
+        <img src="images/tasks.jpg" width="607" height="1320" loading="lazy"
+             alt="The tasks screen: reply to maya at 10 AM, call the dentist at 12:30, groceries at 4, work on the story at 7, with quick notes underneath">
+      </div>
+    </section>
+  </div>
 
+  <!-- =====================================================================
+       Reflect
+       ===================================================================== -->
+  <div class="page">
+    <section class="feature feature--flip reveal" id="reflect">
+      <div class="feature__text">
+        <p class="pill pill--reflect">reflect</p>
+        <h2>Work through what’s crowding you</h2>
+        <p>
+          Not just get it out, but move through it. Whether your mind is
+          overflowing all at once or stuck circling one thing you keep
+          avoiding, Reflect walks you through it step by step, at your own
+          pace, until you come out the other side with something real.
+        </p>
+        <ul class="chips" aria-label="Walkthroughs">
+          <li style="--ink:var(--indigo)">Mind Dump</li>
+          <li style="--ink:var(--indigo)">Procrastination</li>
+        </ul>
+      </div>
+      <div class="phone phone--side">
+        <img src="images/reflect.jpg" width="607" height="1320" loading="lazy"
+             alt="The end of a Mind Dump: six memos on the wall and the words that's all out of your head">
       </div>
     </section>
   </div>
@@ -172,16 +249,25 @@
   <!-- =====================================================================
        Closing
        ===================================================================== -->
-  <div class="page narrow">
-    <section>
-      <div class="closing glass">
-        <h2>No streaks. No counts. No notifications asking where you've been.</h2>
-        <p>
-          The app doesn't keep score, and it won't tell you that you've missed a
-          day. It's there when you open it.
-        </p>
-        <p class="hand">Try this one.</p>
+  <div class="page">
+    <section class="lp-close reveal">
+      <div class="sign sign--close">
+        <i class="pin" aria-hidden="true"></i>
+        <h2>Your mind doesn’t need to hold it all&nbsp;alone.</h2>
+        <p>Give it somewhere to go.</p>
       </div>
+
+      <p class="signoff">try this one :)</p>
+
+      <a class="badge glass" href="#" aria-label="Coming soon to the App Store">
+        <svg class="badge__glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M12 3a1 1 0 0 1 1 1v9.59l3.3-3.3a1 1 0 1 1 1.4 1.42l-5 5a1 1 0 0 1-1.4 0l-5-5a1 1 0 1 1 1.4-1.42l3.3 3.3V4a1 1 0 0 1 1-1Zm-7 14a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v1.5A1.5 1.5 0 0 1 18.5 21h-13A1.5 1.5 0 0 1 4 19.5V18a1 1 0 0 1 1-1Z"/>
+        </svg>
+        <span class="badge__text">
+          <span class="badge__sup">Coming soon to</span>
+          <span class="badge__main">the App Store</span>
+        </span>
+      </a>
     </section>
   </div>
 
@@ -195,22 +281,21 @@
     <li><a href="ai.html">AI Use</a></li>
     <li><a href="mailto:kmworkshq@gmail.com">Contact</a></li>
   </ul>
-  <p class="footer__fine">© 2026 Try This One</p>
+  <p class="footer__fine">© 2026 try this one</p>
 </footer>
 
-<!-- The only script on the page.
-
-     Every screenshot frame points at a file in images/ that hasn't been taken
-     yet. Drop a PNG in at that filename and it shows up with no markup to edit;
-     until then this removes the <img> that failed, leaving the frame and its
-     label, because a broken-image icon on a landing page looks like a mistake
-     and an empty frame looks like a decision. Delete this once the real
-     screenshots are in. -->
+<!-- Sections settle in once as they arrive, then stay put. Nothing moves on
+     its own after that. Without JavaScript, or with reduced motion, everything
+     is simply there. -->
 <script>
-  for (const img of document.querySelectorAll('.shot img')) {
-    img.addEventListener('error', () => img.remove());
-    // A cached failure can land before the listener does.
-    if (img.complete && img.naturalWidth === 0) img.remove();
+  const pieces = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const seen = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); seen.unobserve(e.target); }
+    }, { rootMargin: '0px 0px -12% 0px' });
+    pieces.forEach((p) => seen.observe(p));
+  } else {
+    pieces.forEach((p) => p.classList.add('in'));
   }
 </script>
 

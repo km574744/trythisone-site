@@ -1,17 +1,17 @@
 # Screenshots
 
-The pages point at these filenames. Drop a PNG in at the exact name and it
-appears — there is no markup to edit.
+Real screens from a Release build of the app, captured in the iPhone 17 Pro
+Max simulator (1320×2868) and saved as JPEG at 607×1320 — twice the size the
+page draws them, so they stay sharp on a phone.
 
-| File             | Where it shows                    | Shape          |
-|------------------|-----------------------------------|----------------|
-| `hero.png`       | under the App Store badge         | iPhone, 393×852 |
-| `brain-dump.png` | the Brain Dump card               | iPhone, 393×852 |
-| `tasks.png`      | the Tasks card                    | iPhone, 393×852 |
-| `reflect.png`    | the Reflect card                  | iPhone, 393×852 |
+| File            | Where it shows                     |
+|-----------------|------------------------------------|
+| `wall.jpg`      | the hero, a full brain dump wall   |
+| `mind-dump.jpg` | Brain Dump — memos landing one by one |
+| `projects.jpg`  | Projects — the drawer open         |
+| `tasks.jpg`     | Tasks — lists and quick notes      |
+| `reflect.jpg`   | Reflect — the end of a Mind Dump   |
 
-Any 9:19.5-ish iPhone screenshot works; the frames crop to fill. Straight out
-of the Simulator (⌘S) is fine.
-
-Once all four are in, the small script at the bottom of `index.html` has
-nothing left to do and can be deleted.
+The content on them is made up for the screenshots. To replace one, drop a new
+file in at the same name; the frames keep the phone's shape, so any iPhone
+screenshot straight out of the simulator fits.
