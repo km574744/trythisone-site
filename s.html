@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>A shared wall · try this one</title>
+<meta name="description" content="A project wall, shared from try this one.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Mali:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tto.css">
+<style>
+/* A shared project: one wall, view-only, the way the app draws it.
+   Data comes from the `share` Supabase function (supabase/functions/share).
+   Memo geometry is the app's own: x/y is the card's top-left in board units,
+   width/height fall back to MemoMetrics.naturalSize, scale and rotation are
+   applied about the centre. */
+html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+body { background: var(--bg-braindump); touch-action: none; }
+
+.wall { position: fixed; inset: 0; cursor: grab; }
+.wall.dragging { cursor: grabbing; }
+.world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+
+.head {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 3;
+  padding: calc(env(safe-area-inset-top) + 18px) 16px 22px;
+  text-align: center; pointer-events: none;
+  background: linear-gradient(var(--bg-braindump) 35%, transparent);
+}
+.head h1 {
+  margin: 0; font-weight: 700; font-size: 26px; letter-spacing: .3px; line-height: 1.2;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.head p { margin: 2px 0 0; font-weight: 600; font-size: var(--t-tiny); color: rgba(199, 204, 212, .62); letter-spacing: .2px; }
+
+.foot {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 3;
+  display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 26px 16px calc(env(safe-area-inset-bottom) + 16px);
+  background: linear-gradient(transparent, var(--bg-braindump) 60%);
+  pointer-events: none;
+}
+.foot a, .foot span { pointer-events: auto; }
+.made { font-size: var(--t-tiny); font-weight: 600; color: rgba(199, 204, 212, .55); text-decoration: none; }
+.made b { color: var(--white); font-weight: 700; }
+.pill {
+  font: 700 var(--t-tiny) Quicksand, system-ui, sans-serif; letter-spacing: .5px;
+  color: var(--white); text-decoration: none;
+  padding: 7px 14px; border-radius: 999px;
+  background: rgba(255, 255, 255, .06); border: .75px solid rgba(255, 255, 255, .16);
+}
+.fit {
+  position: fixed; right: 16px; bottom: calc(env(safe-area-inset-bottom) + 64px); z-index: 4;
+  width: 36px; height: 36px; border-radius: 50%;
+  border: .75px solid rgba(255,255,255,.14); background: rgba(255,255,255,.05);
+  color: var(--silver); font: 600 16px Quicksand, sans-serif; cursor: pointer;
+}
+
+/* -- Memos ---------------------------------------------------------------- */
+.m { position: absolute; transform-origin: 50% 50%; }
+.card {
+  width: 100%; height: 100%; overflow: hidden;
+  background: linear-gradient(180deg, var(--glass-top) 0%, var(--glass-mid) 55%, var(--glass-bot) 100%);
+  backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: .75px solid rgba(255, 255, 255, .13);
+  box-shadow: var(--glass-shadow);
+  border-radius: 6px;
+}
+.card.round { border-radius: 12px; }
+.title {
+  margin: 0 10px; padding: 7px 0 4px; font: 700 13px Quicksand, sans-serif;
+  border-bottom: 1px solid rgba(255,255,255,.12); color: var(--white);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.body {
+  padding: 10px 11px 12px; font-family: Mali, Quicksand, sans-serif; font-weight: 500;
+  line-height: 1.35; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.bul { list-style: none; margin: 0; padding: 10px 12px 12px; font-family: Mali, Quicksand, sans-serif; font-weight: 500; line-height: 1.35; }
+.bul li { display: flex; gap: 8px; align-items: baseline; margin: 2px 0; }
+.bul li::before { content: ""; flex: none; width: 8px; height: 3px; border-radius: 2px; background: currentColor; transform: translateY(-3px); box-shadow: 0 0 3px currentColor; }
+.pic { padding: 7px; height: 100%; display: flex; flex-direction: column; gap: 5px; }
+.pic .frame { flex: 1; border-radius: 10px; overflow: hidden; background: rgba(255,255,255,.04); box-shadow: 0 5px 10px rgba(0,0,0,.45); }
+.pic img, .pic svg { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pic .cap { font: 600 9.5px Quicksand, sans-serif; letter-spacing: .4px; color: rgba(199,204,212,.6); text-align: center; text-transform: lowercase; }
+.voice { padding: 10px 12px; font-family: Quicksand, sans-serif; }
+.voice .bars { display: flex; align-items: center; gap: 2px; height: 22px; }
+.voice .bars i { flex: 1; border-radius: 1px; background: currentColor; opacity: .75; }
+.voice .t { margin-top: 8px; font-size: 11.5px; font-weight: 600; color: rgba(245,247,250,.85); line-height: 1.35; }
+.label { font: 600 16px Quicksand, sans-serif; white-space: pre-wrap; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+svg.layer { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+
+/* -- Holders: a square that keeps memos; tap to open and close. ---------- */
+.holder {
+  position: relative; width: 100%; height: 100%; border-radius: 16px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: linear-gradient(180deg, var(--glass-top) 0%, var(--glass-mid) 55%, var(--glass-bot) 100%);
+  backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1.4px solid; box-shadow: var(--glass-shadow); transition: background .3s, box-shadow .3s;
+}
+.holder .tab { position: absolute; left: 12px; top: -6px; width: 34px; height: 6px; border-radius: 6px 6px 0 0; }
+.holder .hn { font: 700 15px Quicksand, sans-serif; text-align: center; padding: 0 10px; overflow-wrap: anywhere; }
+.holder .hc { position: absolute; bottom: 9px; font: 700 10px Quicksand, sans-serif; opacity: .7; }
+.m.kept { transition: transform .45s cubic-bezier(.2, .8, .2, 1), opacity .35s; }
+.m.kept.tucked { opacity: 0; pointer-events: none; }
+line.kept, path.kept { transition: opacity .3s; }
+
+.state { position: fixed; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; }
+.state h2 { margin: 0 0 6px; font-size: 22px; color: var(--white); }
+.state p { margin: 0 0 18px; color: rgba(199,204,212,.7); }
+</style>
+</head>
+<body>
+<div class="ground"></div>
+
+<div class="wall" id="wall"><div class="world" id="world"><svg class="layer" id="lines"></svg></div></div>
+
+<header class="head" id="head" hidden>
+  <h1 id="name"></h1>
+  <p id="meta"></p>
+</header>
+
+<button class="fit" id="fit" title="See everything" aria-label="See everything" hidden>⤢</button>
+
+<footer class="foot" id="foot" hidden>
+  <a class="made" href="./"><span>made with </span><b>try this one</b></a>
+  <a class="pill" href="https://apps.apple.com/us/app/try-this-one/id6760507045">Get the app</a>
+</footer>
+
+<div class="state" id="state"><p>Opening the wall…</p></div>
+
+<script>
+(() => {
+  const FN = "https://cxamshqfuxiiufabsvqo.supabase.co/functions/v1/share";
+  const KEY = "sb_publishable_a7yCYW9cpqd6c2ItzI42FA_RNCMx-Zk";
+
+  // MemoMetrics.naturalSize, by type.
+  const NATURAL = { sticky: [128, 122], bullets: [128, 95], photo: [158, 139], voice: [206, 92], label: [120, 26], holder: [96, 96] };
+  // Memo.baseFontSize, by type.
+  const FONT = { sticky: 14, bullets: 14, voice: 11.5, photo: 13, label: 16 };
+
+  const $ = (id) => document.getElementById(id);
+  const slug = new URLSearchParams(location.search).get("s") || location.hash.slice(1);
+
+  function gone(title, line) {
+    const box = document.createElement("div");
+    const h = document.createElement("h2"); h.textContent = title;
+    const p = document.createElement("p"); p.textContent = line;
+    const a = document.createElement("a"); a.className = "pill"; a.href = "./"; a.textContent = "What's try this one?";
+    box.append(h, p, a);
+    $("state").replaceChildren(box);
+  }
+
+  if (!/^[A-Za-z0-9]{10}$/.test(slug || "")) { gone("Nothing here", "This link isn't complete."); return; }
+
+  fetch(`${FN}?s=${slug}`, { headers: { apikey: KEY } })
+    .then((r) => r.ok ? r.json() : Promise.reject(r.status))
+    .then(render)
+    .catch((status) => status === 404
+      ? gone("This wall isn't shared any more", "Whoever shared it has taken the link down.")
+      : gone("Couldn't open this wall", "Check your connection and try again."));
+
+  // Swift encodes an enum case with values as { case: { label: value } }, and
+  // an unlabelled value as `_0`.
+  const kase = (v) => { const k = Object.keys(v || {})[0]; return [k, (v || {})[k] || {}]; };
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const NS = "http://www.w3.org/2000/svg";
+
+  function strokesSVG(drawing, w, h, fixedWidth) {
+    const svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+    for (const s of drawing.strokes || []) {
+      const pts = (s.points || []).map(([x, y]) => [x * w, y * h]);
+      if (!pts.length) continue;
+      const lw = fixedWidth ?? (s.width || 0.021) * w;
+      if (pts.length === 1) {
+        const c = document.createElementNS(NS, "circle");
+        c.setAttribute("cx", pts[0][0]); c.setAttribute("cy", pts[0][1]); c.setAttribute("r", lw / 2);
+        c.setAttribute("fill", s.colorHex); svg.append(c); continue;
+      }
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", "M" + pts.map((q) => q.join(" ")).join(" L"));
+      p.setAttribute("fill", "none"); p.setAttribute("stroke", s.colorHex);
+      p.setAttribute("stroke-width", lw); p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round");
+      svg.append(p);
+    }
+    return svg;
+  }
+
+  function render(data) {
+    const board = data.board || {};
+    const inks = data.inks || {};
+    const accent = board.colorHex || "#8b85ec";
+    const memos = (board.memos || []).slice().sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0));
+
+    const name = (board.name || "").trim() || "an unnamed project";
+    document.title = `${name} · try this one`;
+    $("name").textContent = name;
+    $("name").style.color = accent;
+    $("name").style.textShadow = `0 0 10px ${accent}73`;
+    const notes = memos.filter((m) => !["mark", "label", "arrow", "holder"].includes(kase(m.content)[0])).length;
+    const when = data.sharedAt ? new Date(data.sharedAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "";
+    $("meta").textContent = `shared ${when} · ${notes} memo${notes === 1 ? "" : "s"}`;
+
+    const world = $("world");
+    const lines = $("lines");
+    const frames = {};
+    const nodes = {};
+    const holderIDs = new Set(memos.filter((m) => kase(m.content)[0] === "holder").map((m) => m.id));
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    const grow = (x, y, w, h) => { minX = Math.min(minX, x); minY = Math.min(minY, y); maxX = Math.max(maxX, x + w); maxY = Math.max(maxY, y + h); };
+
+    for (const m of memos) {
+      const [type, v] = kase(m.content);
+      if (type === "arrow") continue;
+      const ink = inks[m.id] || "#00bfff";
+      let [w, h] = NATURAL[type] || [140, 120];
+      if (type === "photo") {
+        const [, art] = kase(v.artwork);
+        const aspect = art.aspect || art._0?.aspect || 1.5;
+        h = 7 + 11 + (w - 14) / aspect + 6 + 12 + 7 - 11;
+      }
+      if (type === "mark") { const a = v.drawing?.aspect || 1.5; w = 150; h = 150 / a; }
+      w = m.width ?? w; h = m.height ?? h;
+      if (m.isMinimized) { w = h = 58; }
+
+      const node = el("div", "m");
+      // Text cards grow with what's in them, as they do in the app, unless
+      // someone has given the card a shape of its own.
+      const grows = (type === "sticky" || type === "bullets") && m.height == null && !m.isMinimized;
+      Object.assign(node.style, {
+        left: m.x + "px", top: m.y + "px", width: w + "px",
+        [grows ? "minHeight" : "height"]: h + "px",
+        transform: `rotate(${m.rotation || 0}deg) scale(${m.scale || 1})`,
+      });
+      const size = m.fontSize || FONT[type] || 14;
+      const title = (m.title || "").trim();
+
+      if (type === "holder") {
+        // The square, its name on the front and what it keeps underneath —
+        // filled while it's closed. See `HolderFace` in the app.
+        const box = el("div", "holder");
+        box.dataset.holder = m.id;
+        box.style.borderColor = ink;
+        const tab = el("div", "tab"); tab.style.background = ink; box.append(tab);
+        const n = el("div", "hn", title || "holder"); n.style.color = ink; if (!title) n.style.opacity = .5;
+        const c = el("div", "hc"); c.style.color = ink;
+        box.append(n, c);
+        node.append(box);
+      } else if (type === "label") {
+        const t = el("div", "label", v.text || "");
+        t.style.color = ink; t.style.fontSize = size + "px"; t.style.textAlign = m.alignment === "center" ? "center" : "left";
+        node.style.height = "auto"; node.append(t);
+      } else if (type === "mark") {
+        node.append(strokesSVG(v.drawing || {}, w, h, 3.2));
+        node.firstChild.style.width = "100%"; node.firstChild.style.height = "100%";
+        node.firstChild.style.filter = `drop-shadow(0 0 3px ${ink}88)`;
+      } else {
+        const card = el("div", "card" + (type === "sticky" || type === "bullets" ? "" : " round"));
+        if (title) card.append(el("div", "title", title));
+        if (type === "sticky") {
+          const b = el("div", "body", v.text || "");
+          b.style.color = ink; b.style.fontSize = size + "px";
+          b.style.textShadow = `0 0 6px ${ink}66`;
+          if (m.alignment === "center") b.style.textAlign = "center";
+          card.append(b);
+        } else if (type === "bullets") {
+          const ul = el("ul", "bul");
+          ul.style.fontSize = size + "px";
+          for (const item of v.items || []) {
+            const li = el("li"); li.style.color = ink;
+            const span = el("span", null, item); span.style.color = ink;
+            li.append(span); ul.append(li);
+          }
+          card.append(ul);
+        } else if (type === "photo") {
+          const pic = el("div", "pic"); const frame = el("div", "frame");
+          const [kind, art] = kase(v.artwork);
+          if (kind === "photo" && art.id) {
+            const img = el("img"); img.alt = title || "a picture"; img.loading = "lazy";
+            img.src = data.imageBase + art.id.toLowerCase() + ".jpg";
+            img.onerror = () => img.remove();
+            frame.append(img);
+          } else if (kind === "drawing") {
+            const d = art._0 || art; const fw = w - 14, fh = fw / (d.aspect || 1.5);
+            frame.append(strokesSVG(d, fw, fh));
+          }
+          pic.append(frame, el("div", "cap", art.credit ? `${art.credit.name} · ${art.credit.source}` : (kind === "photo" ? "photo" : "drawing")));
+          card.append(pic);
+        } else if (type === "voice") {
+          const box = el("div", "voice"); box.style.color = ink;
+          const bars = el("div", "bars");
+          for (const level of (v.clip?.levels || Array(34).fill(0.3))) {
+            const i = el("i"); i.style.height = Math.max(8, level * 100) + "%"; bars.append(i);
+          }
+          box.append(bars);
+          if (v.clip?.transcript) box.append(el("div", "t", v.clip.transcript));
+          card.append(box);
+          node.style.height = "auto"; node.style.minHeight = h + "px";
+        }
+        node.append(card);
+      }
+      world.append(node);
+      if (grows) h = Math.max(h, node.offsetHeight);
+      frames[m.id] = { x: m.x, y: m.y, w, h };
+      nodes[m.id] = node;
+      grow(m.x, m.y, w, h);
+    }
+
+    // Arrows, drawn between the centres of what they're fastened to.
+    const arrowsTo = [];
+    for (const m of memos) {
+      const [type, v] = kase(m.content);
+      if (type !== "arrow") continue;
+      const a = v._0 || v;
+      const frame = (e) => e?.memoID && frames[e.memoID];
+      const point = (e) => { const f = frame(e); return f ? [f.x + f.w / 2, f.y + f.h / 2] : [e?.x || 0, e?.y || 0]; };
+      // A fastened end stops a little short of its card's edge, so the head
+      // shows instead of disappearing under the card.
+      const edge = (e, toward) => {
+        const f = frame(e), p = point(e); if (!f) return p;
+        const dx = toward[0] - p[0], dy = toward[1] - p[1];
+        const t = Math.min(Math.abs((f.w / 2 + 6) / (dx || 1e-6)), Math.abs((f.h / 2 + 6) / (dy || 1e-6)), 1);
+        return [p[0] + dx * t, p[1] + dy * t];
+      };
+      const tp = point(a.tail), hp = point(a.head);
+      const [x1, y1] = edge(a.tail, hp), [x2, y2] = edge(a.head, tp);
+      const ink = inks[m.id] || "#c7ccd4";
+      const p = document.createElementNS(NS, "line");
+      Object.entries({ x1, y1, x2, y2, stroke: ink, "stroke-width": 2.4, "stroke-linecap": "round", opacity: .85 })
+        .forEach(([k, val]) => p.setAttribute(k, val));
+      lines.append(p);
+      const ends = [a.tail?.memoID, a.head?.memoID].filter(Boolean);
+      const drawn = [p];
+      const head = (fx, fy, tx, ty) => {
+        const ang = Math.atan2(ty - fy, tx - fx), s = 10;
+        const q = document.createElementNS(NS, "path");
+        q.setAttribute("d", `M${tx - s * Math.cos(ang - .45)} ${ty - s * Math.sin(ang - .45)} L${tx} ${ty} L${tx - s * Math.cos(ang + .45)} ${ty - s * Math.sin(ang + .45)}`);
+        q.setAttribute("fill", "none"); q.setAttribute("stroke", ink); q.setAttribute("stroke-width", 2.4);
+        q.setAttribute("stroke-linecap", "round"); q.setAttribute("stroke-linejoin", "round");
+        lines.append(q); drawn.push(q);
+      };
+      if (a.heads !== "none") head(x1, y1, x2, y2);
+      if (a.heads === "both") head(x2, y2, x1, y1);
+      arrowsTo.push({ ends, drawn });
+      grow(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1), Math.abs(y2 - y1));
+    }
+
+    // -- Holders: what each keeps, folded into it or out where it was left.
+    const kept = {};
+    for (const m of memos) {
+      if (!m.heldBy || !holderIDs.has(m.heldBy) || !nodes[m.id]) continue;
+      (kept[m.heldBy] ||= []).push(m);
+    }
+    const tucked = new Set(memos.filter((m) => m.heldBy && m.tucked && kept[m.heldBy]).map((m) => m.id));
+    const base = (m) => `rotate(${m.rotation || 0}deg) scale(${m.scale || 1})`;
+    const showHolders = () => {
+      for (const [hid, members] of Object.entries(kept)) {
+        const hf = frames[hid];
+        const open = members.some((m) => !tucked.has(m.id));
+        for (const m of members) {
+          const node = nodes[m.id], f = frames[m.id];
+          node.classList.add("kept");
+          node.classList.toggle("tucked", tucked.has(m.id));
+          const dx = hf.x + hf.w / 2 - (f.x + f.w / 2), dy = hf.y + hf.h / 2 - (f.y + f.h / 2);
+          node.style.transform = tucked.has(m.id) ? `translate(${dx}px, ${dy}px) scale(.08)` : base(m);
+          // The card's own faint edge, in the holder's colour.
+          const card = node.querySelector(".card");
+          if (card) card.style.borderColor = `${inks[hid] || "#00bfff"}b3`;
+        }
+        const box = nodes[hid].querySelector(".holder"), ink = inks[hid] || "#00bfff";
+        box.querySelector(".hc").textContent = !members.length ? "empty" : open ? `${members.length} out` : `${members.length} inside`;
+        box.style.background = open ? "" : `linear-gradient(180deg, ${ink}42, ${ink}1f)`;
+        box.style.boxShadow = open ? "" : `0 0 14px ${ink}40`;
+      }
+      for (const nodeID of holderIDs) if (!kept[nodeID]) nodes[nodeID].querySelector(".hc").textContent = "empty";
+      for (const a of arrowsTo) {
+        const hidden = a.ends.some((id) => tucked.has(id));
+        for (const d of a.drawn) { d.classList.add("kept"); d.style.opacity = hidden ? 0 : ""; }
+      }
+    };
+    const toggleHolder = (hid) => {
+      const members = kept[hid] || [];
+      const closing = members.some((m) => !tucked.has(m.id));
+      for (const m of members) closing ? tucked.add(m.id) : tucked.delete(m.id);
+      showHolders();
+    };
+    showHolders();
+
+    $("state").remove();
+    $("head").hidden = $("foot").hidden = $("fit").hidden = false;
+
+    // -- Looking around: drag to pan, pinch or wheel to zoom, ⤢ to see it all.
+    let zoom = 1, panX = 0, panY = 0;
+    const apply = () => { world.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`; };
+    const fit = () => {
+      if (!isFinite(minX)) { apply(); return; }
+      const top = $("head").offsetHeight - 10, bottom = $("foot").offsetHeight;
+      const vw = innerWidth - 32, vh = innerHeight - top - bottom;
+      const bw = maxX - minX, bh = maxY - minY;
+      zoom = Math.max(0.2, Math.min(1.4, vw / bw, vh / bh));
+      panX = 16 + (vw - bw * zoom) / 2 - minX * zoom;
+      panY = top + (vh - bh * zoom) / 2 - minY * zoom;
+      apply();
+    };
+    const zoomAt = (cx, cy, next) => {
+      next = Math.max(0.15, Math.min(4, next));
+      panX = cx - (cx - panX) * (next / zoom); panY = cy - (cy - panY) * (next / zoom);
+      zoom = next; apply();
+    };
+    fit();
+    addEventListener("resize", fit);
+    $("fit").onclick = fit;
+
+    const wall = $("wall"), pts = new Map();
+    let last = null, press = null;
+    wall.addEventListener("pointerdown", (e) => {
+      // A holder under a single finger that lifts without moving was tapped.
+      const h = e.target.closest?.(".holder");
+      press = !pts.size && h ? { id: h.dataset.holder, x: e.clientX, y: e.clientY } : null;
+      wall.setPointerCapture(e.pointerId); pts.set(e.pointerId, [e.clientX, e.clientY]); last = null; wall.classList.add("dragging");
+    });
+    wall.addEventListener("pointermove", (e) => {
+      if (!pts.has(e.pointerId)) return;
+      pts.set(e.pointerId, [e.clientX, e.clientY]);
+      const ps = [...pts.values()];
+      const cx = ps.reduce((s, p) => s + p[0], 0) / ps.length, cy = ps.reduce((s, p) => s + p[1], 0) / ps.length;
+      const spread = ps.length > 1 ? Math.hypot(ps[0][0] - ps[1][0], ps[0][1] - ps[1][1]) : 0;
+      if (last && last.n === ps.length) {
+        panX += cx - last.cx; panY += cy - last.cy;
+        if (spread && last.spread) zoomAt(cx, cy, zoom * spread / last.spread); else apply();
+      }
+      last = { cx, cy, spread, n: ps.length };
+    });
+    const up = (e) => {
+      if (press && e.type === "pointerup" && Math.hypot(e.clientX - press.x, e.clientY - press.y) < 6) toggleHolder(press.id);
+      press = null;
+      pts.delete(e.pointerId); last = null; if (!pts.size) wall.classList.remove("dragging");
+    };
+    wall.addEventListener("pointerup", up); wall.addEventListener("pointercancel", up);
+    wall.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      if (e.ctrlKey || !e.deltaX && Math.abs(e.deltaY) > 40) zoomAt(e.clientX, e.clientY, zoom * Math.exp(-e.deltaY * 0.0025));
+      else { panX -= e.deltaX; panY -= e.deltaY; apply(); }
+    }, { passive: false });
+  }
+})();
+</script>
+</body>
+</html>
