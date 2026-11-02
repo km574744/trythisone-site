@@ -18,6 +18,7 @@
    Memo geometry is the app's own: x/y is the card's top-left in board units,
    width/height fall back to MemoMetrics.naturalSize, scale and rotation are
    applied about the centre. */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
 body { background: var(--bg-braindump); touch-action: none; }
 
@@ -62,36 +63,39 @@ body { background: var(--bg-braindump); touch-action: none; }
 
 /* -- Memos ---------------------------------------------------------------- */
 .m { position: absolute; transform-origin: 50% 50%; }
+.m.boxed { display: flex; }
 .card {
-  width: 100%; height: 100%; overflow: hidden;
-  background: linear-gradient(180deg, var(--glass-top) 0%, var(--glass-mid) 55%, var(--glass-bot) 100%);
-  backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: .75px solid rgba(255, 255, 255, .13);
+  flex: 1; min-width: 0; overflow: hidden; border-radius: 6px;
+  background: linear-gradient(180deg, rgba(255,255,255,.075) 0%, rgba(255,255,255,.02) 55%, rgba(255,255,255,.012) 100%), #262627;
+  border: .75px solid rgba(255, 255, 255, .14);
   box-shadow: var(--glass-shadow);
-  border-radius: 6px;
 }
+.card.lined { padding: 10px 12px 12px; }
 .card.round { border-radius: 12px; }
-.title {
-  margin: 0 10px; padding: 7px 0 4px; font: 700 13px Quicksand, sans-serif;
-  border-bottom: 1px solid rgba(255,255,255,.12); color: var(--white);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+.card.bare { background: none; border: 0; box-shadow: none; }
+.memo-pin {
+  position: absolute; left: 50%; top: -7px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle at 33% 27%, rgba(255,255,255,.85), transparent 40%), radial-gradient(circle at 50% 58%, #2f6fe0, #15448f 64%);
 }
-.body {
-  padding: 10px 11px 12px; font-family: Mali, Quicksand, sans-serif; font-weight: 500;
-  line-height: 1.35; white-space: pre-wrap; overflow-wrap: anywhere;
-}
-.bul { list-style: none; margin: 0; padding: 10px 12px 12px; font-family: Mali, Quicksand, sans-serif; font-weight: 500; line-height: 1.35; }
-.bul li { display: flex; gap: 8px; align-items: baseline; margin: 2px 0; }
+.rule { height: 11px; padding-bottom: 2px; display: flex; align-items: center; justify-content: center; }
+.rule i { width: 22px; height: 1.6px; border-radius: 1px; background: currentColor; opacity: .19; }
+.tm { text-align: center; margin-bottom: 6px; }
+.tm span { display: inline-block; padding-bottom: 4px; font-family: Quicksand, sans-serif; font-weight: 600; line-height: 1.2; overflow-wrap: anywhere; background: linear-gradient(currentColor, currentColor) bottom / 100% 1.4px no-repeat; }
+.body { font-family: Mali, Quicksand, sans-serif; font-weight: 400; letter-spacing: .3px; line-height: calc(1.4em + 2.4px); white-space: pre-wrap; overflow-wrap: anywhere; }
+.bul { list-style: none; margin: 0; padding: 0; font-family: Mali, Quicksand, sans-serif; font-weight: 400; letter-spacing: .3px; line-height: 1.4; }
+.bul li { display: flex; gap: 7px; align-items: baseline; margin: 0 0 3px; }
+.bul li span { min-width: 0; overflow-wrap: anywhere; }
 .bul li::before { content: ""; flex: none; width: 8px; height: 3px; border-radius: 2px; background: currentColor; transform: translateY(-3px); box-shadow: 0 0 3px currentColor; }
-.pic { padding: 7px; height: 100%; display: flex; flex-direction: column; gap: 5px; }
-.pic .frame { flex: 1; border-radius: 10px; overflow: hidden; background: rgba(255,255,255,.04); box-shadow: 0 5px 10px rgba(0,0,0,.45); }
+.pic { padding: 7px; height: 100%; display: flex; flex-direction: column; gap: 6px; }
+.pic.bare { padding: 0; }
+.pic .frame { flex: 1; min-height: 0; border-radius: 10px; overflow: hidden; background: rgba(255,255,255,.04); }
 .pic img, .pic svg { width: 100%; height: 100%; object-fit: cover; display: block; }
 .pic .cap { font: 600 9.5px Quicksand, sans-serif; letter-spacing: .4px; color: rgba(199,204,212,.6); text-align: center; text-transform: lowercase; }
 .voice { padding: 10px 12px; font-family: Quicksand, sans-serif; }
 .voice .bars { display: flex; align-items: center; gap: 2px; height: 22px; }
 .voice .bars i { flex: 1; border-radius: 1px; background: currentColor; opacity: .75; }
 .voice .t { margin-top: 8px; font-size: 11.5px; font-weight: 600; color: rgba(245,247,250,.85); line-height: 1.35; }
-.label { font: 600 16px Quicksand, sans-serif; white-space: pre-wrap; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+.label { padding: 9px 13px; font-family: Quicksand, sans-serif; font-weight: 600; letter-spacing: .2px; line-height: calc(1.25em + 2px); white-space: pre-wrap; overflow-wrap: anywhere; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
 svg.layer { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
 
 /* -- Holders: a square that keeps memos; tap to open and close. ---------- */
@@ -143,6 +147,19 @@ line.kept, path.kept { transition: opacity .3s; }
   // Memo.baseFontSize, by type.
   const FONT = { sticky: 14, bullets: 14, voice: 11.5, photo: 13, label: 16 };
 
+  // The sizes the app gives a memo as its writing grows, from MemoMetrics.stickyWidth,
+  // MemoTextFit and MemoLabel. A wall has to come out the shape it was left in,
+  // so these have to keep agreeing with the app.
+  const count = (s) => [...(s || "")].length;
+  const stickyWidth = (text) => { const n = count(text); return n < 46 ? 128 : n < 110 ? 172 : n < 260 ? 216 : 244; };
+  const smooth = (n, from, to) => { if (n <= from) return 0; const t = Math.min(1, (n - from) / (to - from)); return t * t * (3 - 2 * t); };
+  const shrink = (n) => 1 - 0.28 * smooth(n, 240, 1150);
+  const titleSize = (n) => 15.5 - 3.5 * smooth(n, 16, 34);
+  const labelMaxWidth = (size) => 260 * Math.max(1, size / 16) + 4 + 26;
+  const NOTE_MIN_HEIGHT = 57;  // a line of text and the card's own padding
+  const ARROW_GAP = 7;         // MemoArrow.attachGap
+  const ARROW_MIN = 14;        // MemoArrow.minimumLength
+
   const $ = (id) => document.getElementById(id);
   const slug = new URLSearchParams(location.search).get("s") || location.hash.slice(1);
 
@@ -159,10 +176,17 @@ line.kept, path.kept { transition: opacity .3s; }
 
   fetch(`${FN}?s=${slug}`, { headers: { apikey: KEY } })
     .then((r) => r.ok ? r.json() : Promise.reject(r.status))
-    .then(render)
+    .then((data) => fontsReady().then(() => render(data)))
     .catch((status) => status === 404
       ? gone("This wall isn't shared any more", "Whoever shared it has taken the link down.")
       : gone("Couldn't open this wall", "Check your connection and try again."));
+
+  // Cards take their height from their text, so measure in the real faces. A slow
+  // font network shouldn't hold the wall back for long.
+  function fontsReady() {
+    const faces = ["400 14px Mali", "600 16px Quicksand"].map((f) => document.fonts.load(f));
+    return Promise.race([Promise.all(faces), new Promise((done) => setTimeout(done, 1500))]).catch(() => {});
+  }
 
   // Swift encodes an enum case with values as { case: { label: value } }, and
   // an unlabelled value as `_0`.
@@ -189,6 +213,15 @@ line.kept, path.kept { transition: opacity .3s; }
       svg.append(p);
     }
     return svg;
+  }
+
+  // A note's name over its underline, or just the bare rule. See MemoTitleMark.
+  function titleMark(title, ink) {
+    if (!title) { const r = el("div", "rule"); r.style.color = ink; r.append(el("i")); return r; }
+    const box = el("div", "tm"), name = el("span", null, title);
+    name.style.color = ink; name.style.fontSize = titleSize(count(title)) + "px";
+    box.append(name);
+    return box;
   }
 
   function render(data) {
@@ -219,25 +252,31 @@ line.kept, path.kept { transition: opacity .3s; }
       if (type === "arrow") continue;
       const ink = inks[m.id] || "#00bfff";
       let [w, h] = NATURAL[type] || [140, 120];
+      const [artKind, art] = type === "photo" ? kase(v.artwork) : ["", {}];
+      if (type === "sticky") { w = stickyWidth(v.text); h = NOTE_MIN_HEIGHT; }
+      if (type === "bullets") h = NOTE_MIN_HEIGHT;
       if (type === "photo") {
-        const [, art] = kase(v.artwork);
         const aspect = art.aspect || art._0?.aspect || 1.5;
-        h = 7 + 11 + (w - 14) / aspect + 6 + 12 + 7 - 11;
+        h = artKind === "drawing" ? w / aspect : (w - 14) / aspect + 7 + 7 + 11 + 18 + 12;
       }
       if (type === "mark") { const a = v.drawing?.aspect || 1.5; w = 150; h = 150 / a; }
       w = m.width ?? w; h = m.height ?? h;
       if (m.isMinimized) { w = h = 58; }
 
       const node = el("div", "m");
-      // Text cards grow with what's in them, as they do in the app, unless
-      // someone has given the card a shape of its own.
-      const grows = (type === "sticky" || type === "bullets") && m.height == null && !m.isMinimized;
+      // Text cards are at least the shape they were given and grow with what's
+      // in them, as they do in the app.
+      const grows = (type === "sticky" || type === "bullets") && !m.isMinimized;
       Object.assign(node.style, {
         left: m.x + "px", top: m.y + "px", width: w + "px",
         [grows ? "minHeight" : "height"]: h + "px",
         transform: `rotate(${m.rotation || 0}deg) scale(${m.scale || 1})`,
       });
-      const size = m.fontSize || FONT[type] || 14;
+      const written = type === "sticky" || type === "label" ? count(v.text)
+        : type === "bullets" ? (v.items || []).reduce((n, i) => n + count(i) + 1, 0)
+        : type === "voice" ? count(v.clip?.transcript) : 0;
+      const asked = m.fontSize || FONT[type] || 14;
+      const size = Math.max(type === "bullets" ? FONT.bullets : 10.5, asked * shrink(written));
       const title = (m.title || "").trim();
 
       if (type === "holder") {
@@ -252,22 +291,25 @@ line.kept, path.kept { transition: opacity .3s; }
         box.append(n, c);
         node.append(box);
       } else if (type === "label") {
+        // Hugs its words up to where it wraps, unless it's been given a width.
         const t = el("div", "label", v.text || "");
         t.style.color = ink; t.style.fontSize = size + "px"; t.style.textAlign = m.alignment === "center" ? "center" : "left";
-        node.style.height = "auto"; node.append(t);
+        node.style.height = "auto";
+        if (m.width == null) { node.style.width = "max-content"; node.style.maxWidth = labelMaxWidth(size) + "px"; }
+        node.append(t);
       } else if (type === "mark") {
         node.append(strokesSVG(v.drawing || {}, w, h, 3.2));
         node.firstChild.style.width = "100%"; node.firstChild.style.height = "100%";
         node.firstChild.style.filter = `drop-shadow(0 0 3px ${ink}88)`;
       } else {
-        const card = el("div", "card" + (type === "sticky" || type === "bullets" ? "" : " round"));
-        if (title) card.append(el("div", "title", title));
+        node.classList.add("boxed");
+        const note = type === "sticky" || type === "bullets";
+        const card = el("div", "card" + (note ? " lined" : " round"));
         if (type === "sticky") {
           const b = el("div", "body", v.text || "");
           b.style.color = ink; b.style.fontSize = size + "px";
-          b.style.textShadow = `0 0 6px ${ink}66`;
           if (m.alignment === "center") b.style.textAlign = "center";
-          card.append(b);
+          card.append(titleMark(title, ink), b);
         } else if (type === "bullets") {
           const ul = el("ul", "bul");
           ul.style.fontSize = size + "px";
@@ -276,23 +318,30 @@ line.kept, path.kept { transition: opacity .3s; }
             const span = el("span", null, item); span.style.color = ink;
             li.append(span); ul.append(li);
           }
-          card.append(ul);
+          card.append(titleMark(title, ink), ul);
         } else if (type === "photo") {
-          const pic = el("div", "pic"); const frame = el("div", "frame");
-          const [kind, art] = kase(v.artwork);
-          if (kind === "photo" && art.id) {
+          const drawing = artKind === "drawing";
+          const pic = el("div", "pic" + (drawing ? " bare" : "")); const frame = el("div", "frame");
+          if (artKind === "photo" && /^[0-9A-Fa-f-]{36}$/.test(art.id)) {
             const img = el("img"); img.alt = title || "a picture"; img.loading = "lazy";
             img.src = data.imageBase + art.id.toLowerCase() + ".jpg";
             img.onerror = () => img.remove();
             frame.append(img);
-          } else if (kind === "drawing") {
-            const d = art._0 || art; const fw = w - 14, fh = fw / (d.aspect || 1.5);
-            frame.append(strokesSVG(d, fw, fh));
+          } else if (drawing) {
+            const d = art._0 || art; const fh = w / (d.aspect || 1.5);
+            frame.append(strokesSVG(d, w, fh));
           }
-          pic.append(frame, el("div", "cap", art.credit ? `${art.credit.name} · ${art.credit.source}` : (kind === "photo" ? "photo" : "drawing")));
+          if (drawing) {
+            // The canvas and nothing else: no frame, no strip, no stamp.
+            card.classList.add("bare");
+            pic.append(frame);
+          } else {
+            pic.append(titleMark(title, ink), frame, el("div", "cap", art.credit ? `${art.credit.name} · ${art.credit.source}` : "photo"));
+          }
           card.append(pic);
         } else if (type === "voice") {
           const box = el("div", "voice"); box.style.color = ink;
+          box.append(titleMark(title, ink));
           const bars = el("div", "bars");
           for (const level of (v.clip?.levels || Array(34).fill(0.3))) {
             const i = el("i"); i.style.height = Math.max(8, level * 100) + "%"; bars.append(i);
@@ -303,50 +352,72 @@ line.kept, path.kept { transition: opacity .3s; }
           node.style.height = "auto"; node.style.minHeight = h + "px";
         }
         node.append(card);
+        if (note) node.append(el("div", "memo-pin"));
       }
       world.append(node);
-      if (grows) h = Math.max(h, node.offsetHeight);
-      frames[m.id] = { x: m.x, y: m.y, w, h };
+      // The size it came out, not the size it was offered.
+      if (!m.isMinimized) { w = node.offsetWidth; h = node.offsetHeight; }
+      const s = m.scale || 1;
+      frames[m.id] = { x: m.x, y: m.y, w, h, s };
       nodes[m.id] = node;
-      grow(m.x, m.y, w, h);
+      grow(m.x + w * (1 - s) / 2, m.y + h * (1 - s) / 2, w * s, h * s);
     }
 
-    // Arrows, drawn between the centres of what they're fastened to.
+    // Arrows, from the middle of what they're fastened to, stopped just off its
+    // edge, as MemoArrow.resolve does. A line with no sensible place to go — one
+    // note inside the other, or the two nearly touching — isn't drawn.
     const arrowsTo = [];
     for (const m of memos) {
       const [type, v] = kase(m.content);
       if (type !== "arrow") continue;
       const a = v._0 || v;
       const frame = (e) => e?.memoID && frames[e.memoID];
-      const point = (e) => { const f = frame(e); return f ? [f.x + f.w / 2, f.y + f.h / 2] : [e?.x || 0, e?.y || 0]; };
-      // A fastened end stops a little short of its card's edge, so the head
-      // shows instead of disappearing under the card.
-      const edge = (e, toward) => {
-        const f = frame(e), p = point(e); if (!f) return p;
-        const dx = toward[0] - p[0], dy = toward[1] - p[1];
-        const t = Math.min(Math.abs((f.w / 2 + 6) / (dx || 1e-6)), Math.abs((f.h / 2 + 6) / (dy || 1e-6)), 1);
-        return [p[0] + dx * t, p[1] + dy * t];
+      const centre = (e) => { const f = frame(e); return f ? [f.x + f.w / 2, f.y + f.h / 2] : [e?.x || 0, e?.y || 0]; };
+      const edge = (e, from, to) => {
+        const f = frame(e); if (!f) return from;
+        const hw = f.w * f.s / 2 + ARROW_GAP, hh = f.h * f.s / 2 + ARROW_GAP;
+        const dx = to[0] - from[0], dy = to[1] - from[1];
+        if (Math.abs(dx) <= hw && Math.abs(dy) <= hh) return null;
+        const t = Math.min(dx ? hw / Math.abs(dx) : Infinity, dy ? hh / Math.abs(dy) : Infinity);
+        return [from[0] + dx * t, from[1] + dy * t];
       };
-      const tp = point(a.tail), hp = point(a.head);
-      const [x1, y1] = edge(a.tail, hp), [x2, y2] = edge(a.head, tp);
+      const ca = centre(a.tail), cb = centre(a.head);
+      const t = edge(a.tail, ca, cb), h = edge(a.head, cb, ca);
+      if (!t || !h) continue;
+      const [x1, y1] = t, [x2, y2] = h;
+      const span = Math.hypot(x2 - x1, y2 - y1);
+      if ((x2 - x1) * (cb[0] - ca[0]) + (y2 - y1) * (cb[1] - ca[1]) <= 0 || span < ARROW_MIN) continue;
+
       const ink = inks[m.id] || "#c7ccd4";
+      const dotted = a.connector === true;
       const p = document.createElementNS(NS, "line");
-      Object.entries({ x1, y1, x2, y2, stroke: ink, "stroke-width": 2.4, "stroke-linecap": "round", opacity: .85 })
+      Object.entries({ x1, y1, x2, y2, stroke: ink, "stroke-width": dotted ? 1.8 : 2.4, "stroke-linecap": "round" })
         .forEach(([k, val]) => p.setAttribute(k, val));
+      if (dotted) p.setAttribute("stroke-dasharray", "0.1 6");
       lines.append(p);
-      const ends = [a.tail?.memoID, a.head?.memoID].filter(Boolean);
       const drawn = [p];
       const head = (fx, fy, tx, ty) => {
-        const ang = Math.atan2(ty - fy, tx - fx), s = 10;
+        const ang = Math.atan2(ty - fy, tx - fx), s = Math.min(12, span * .4);
         const q = document.createElementNS(NS, "path");
-        q.setAttribute("d", `M${tx - s * Math.cos(ang - .45)} ${ty - s * Math.sin(ang - .45)} L${tx} ${ty} L${tx - s * Math.cos(ang + .45)} ${ty - s * Math.sin(ang + .45)}`);
+        q.setAttribute("d", `M${tx - s * Math.cos(ang - .5)} ${ty - s * Math.sin(ang - .5)} L${tx} ${ty} L${tx - s * Math.cos(ang + .5)} ${ty - s * Math.sin(ang + .5)}`);
         q.setAttribute("fill", "none"); q.setAttribute("stroke", ink); q.setAttribute("stroke-width", 2.4);
         q.setAttribute("stroke-linecap", "round"); q.setAttribute("stroke-linejoin", "round");
         lines.append(q); drawn.push(q);
       };
-      if (a.heads !== "none") head(x1, y1, x2, y2);
-      if (a.heads === "both") head(x2, y2, x1, y1);
-      arrowsTo.push({ ends, drawn });
+      // A dotted connection has no heads: a small dot where it holds a note.
+      const dot = (x, y) => {
+        const c = document.createElementNS(NS, "circle");
+        Object.entries({ cx: x, cy: y, r: 2.5, fill: ink }).forEach(([k, val]) => c.setAttribute(k, val));
+        lines.append(c); drawn.push(c);
+      };
+      if (dotted) {
+        if (frame(a.tail)) dot(x1, y1);
+        if (frame(a.head)) dot(x2, y2);
+      } else {
+        if (a.heads !== "none") head(x1, y1, x2, y2);
+        if (a.heads === "both") head(x2, y2, x1, y1);
+      }
+      arrowsTo.push({ ends: [a.tail?.memoID, a.head?.memoID].filter(Boolean), drawn });
       grow(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1), Math.abs(y2 - y1));
     }
 
@@ -402,13 +473,13 @@ line.kept, path.kept { transition: opacity .3s; }
       const top = $("head").offsetHeight - 10, bottom = $("foot").offsetHeight;
       const vw = innerWidth - 32, vh = innerHeight - top - bottom;
       const bw = maxX - minX, bh = maxY - minY;
-      zoom = Math.max(0.2, Math.min(1.4, vw / bw, vh / bh));
+      zoom = Math.max(0.05, Math.min(1.4, vw / bw, vh / bh));
       panX = 16 + (vw - bw * zoom) / 2 - minX * zoom;
       panY = top + (vh - bh * zoom) / 2 - minY * zoom;
       apply();
     };
     const zoomAt = (cx, cy, next) => {
-      next = Math.max(0.15, Math.min(4, next));
+      next = Math.max(0.05, Math.min(4, next));
       panX = cx - (cx - panX) * (next / zoom); panY = cy - (cy - panY) * (next / zoom);
       zoom = next; apply();
     };
